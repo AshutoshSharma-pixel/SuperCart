@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Product Barcodes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .product {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            color: #10B981;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .barcode {
+            background: #f3f4f6;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+
+        .qr-container {
+            display: inline-block;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Test Product Barcodes</h1>
+    <p>Scan these QR codes with the app to add products to your cart:</p>
+
+    <div class="product">
+        <div class="product-name">Coke Zero 300ml</div>
+        <div class="product-price">₹40.00</div>
+        <div class="barcode">Barcode: 8901030776566</div>
+        <div class="qr-container" id="qr1"></div>
+    </div>
+
+    <div class="product">
+        <div class="product-name">Lays Classic Salted</div>
+        <div class="product-price">₹20.00</div>
+        <div class="barcode">Barcode: 8901725181222</div>
+        <div class="qr-container" id="qr2"></div>
+    </div>
+
+    <div class="product">
+        <div class="product-name">Britannia Good Day</div>
+        <div class="product-price">₹30.00</div>
+        <div class="barcode">Barcode: 8901063092686</div>
+        <div class="qr-container" id="qr3"></div>
+    </div>
+
+    <div class="product">
+        <div class="product-name">Maggi 2-Minute Noodles</div>
+        <div class="product-price">₹14.00</div>
+        <div class="barcode">Barcode: 8901058847844</div>
+        <div class="qr-container" id="qr4"></div>
+    </div>
+
+    <div class="product">
+        <div class="product-name">Test Product</div>
+        <div class="product-price">₹100.00</div>
+        <div class="barcode">Barcode: 123456</div>
+        <div class="qr-container" id="qr5"></div>
+    </div>
+
+    <script>
+        new QRCode(document.getElementById("qr1"), {
+            text: "8901030776566",
+            width: 200,
+            height: 200
+        });
+        new QRCode(document.getElementById("qr2"), {
+            text: "8901725181222",
+            width: 200,
+            height: 200
+        });
+        new QRCode(document.getElementById("qr3"), {
+            text: "8901063092686",
+            width: 200,
+            height: 200
+        });
+        new QRCode(document.getElementById("qr4"), {
+            text: "8901058847844",
+            width: 200,
+            height: 200
+        });
+        new QRCode(document.getElementById("qr5"), {
+            text: "123456",
+            width: 200,
+            height: 200
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SuperCart Shop QR (Store 1)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        #qrcode {
+            margin: auto;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>SuperCart Store #1</h1>
+    <p>Scan this to enter the store</p>
+    <div id="qrcode"></div>
+    <script>
+        // The app expects just the Store ID "1" or JSON like '{"storeId":1}'
+        // Based on ShopScanScreen.js: const json = JSON.parse(data); ... if (json.storeId) ...
+        var qrData = JSON.stringify({ storeId: 1 });
+        new QRCode(document.getElementById("qrcode"), {
+            text: qrData,
+            width: 300,
+            height: 300
+        });
+    </script>
+</body>
+
+</html>
