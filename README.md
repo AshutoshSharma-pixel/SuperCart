@@ -223,10 +223,6 @@ Key tables:
 - Exit token validation
 - Trust score system for fraud detection
 
-## 📄 License
-
-MIT License - see LICENSE file for details
-
 ## 👥 Contributors
 
 - Ashutosh Sharma
