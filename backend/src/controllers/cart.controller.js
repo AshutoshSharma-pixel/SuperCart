@@ -1,8 +1,9 @@
 const { Session, Product, CartItem, Store, User } = require('../models');
+const { calculateDiscountedPrice } = require('../utils/discount');
 
 
 // Add Item to Cart
-exports.addToCart = async (req, res) => {
+exports.addToCart = async (req, res, next) => {
     try {
         console.log('Add to Cart Request:', req.body);
         const { sessionId, barcode, quantity } = req.body;
@@ -41,21 +42,29 @@ exports.addToCart = async (req, res) => {
             where: { sessionId, productId: product.id }
         });
 
+        const priceInfo = calculateDiscountedPrice(product);
+
         if (existingItem) {
-            existingItem.quantity += qty; // Use qty
-            // Update snapshot to latest price if needed, or keep original.
-            // For security, we might want to keep the original,
-            // OR update it to current price since they are buying more.
-            // Let's update it to current price to be consistent.
-            existingItem.priceSnapshot = product.price;
+            existingItem.quantity += qty;
+            existingItem.priceSnapshot = priceInfo.originalPrice;
+            existingItem.finalPriceSnapshot = priceInfo.finalPrice;
+            existingItem.discountApplied = priceInfo.discountApplied;
+            existingItem.discountType = priceInfo.discountType;
+            existingItem.discountValue = priceInfo.discountValue;
+            existingItem.savings = priceInfo.savings;
             await existingItem.save();
-            console.log(`Updated CartItem ${existingItem.id}: quantity=${existingItem.quantity}, priceSnapshot=${existingItem.priceSnapshot}`);
+            console.log(`Updated CartItem ${existingItem.id}: quantity=${existingItem.quantity}, finalPriceSnapshot=${existingItem.finalPriceSnapshot}`);
         } else {
             await CartItem.create({
                 sessionId,
                 productId: product.id,
-                quantity: qty, // Use qty
-                priceSnapshot: product.price
+                quantity: qty,
+                priceSnapshot: priceInfo.originalPrice,
+                finalPriceSnapshot: priceInfo.finalPrice,
+                discountApplied: priceInfo.discountApplied,
+                discountType: priceInfo.discountType,
+                discountValue: priceInfo.discountValue,
+                savings: priceInfo.savings
             });
             console.log(`Created new CartItem for sessionId=${sessionId}, productId=${product.id}, quantity=${qty}`);
         }
@@ -70,12 +79,12 @@ exports.addToCart = async (req, res) => {
 
     } catch (error) {
         console.error('Add to cart error:', error);
-        res.status(500).json({ error: 'Server error' });
+        next(error);
     }
 };
 
 // Create New Session (Entry)
-exports.startSession = async (req, res) => {
+exports.startSession = async (req, res, next) => {
     try {
         console.log('Start Session Request Body:', req.body);
         let { userId, storeId } = req.body;
@@ -143,23 +152,114 @@ exports.startSession = async (req, res) => {
         res.json(session);
     } catch (error) {
         console.error('Start Session Error:', error);
-        res.status(500).json({ error: 'Server error: ' + error.message });
+        next(error);
     }
 };
 
 // Helper: Recalculate Total
 async function calculateTotal(sessionId) {
-    const session = await Session.findByPk(sessionId, {
-        include: [{ model: Product, through: { attributes: ['quantity'] } }]
-    });
-
+    const items = await CartItem.findAll({ where: { sessionId } });
     let total = 0;
-    if (session.products) {
-        session.products.forEach(p => {
-            total += p.price * p.cart_item.quantity;
-        });
-    }
-
-    session.totalAmount = total;
-    await session.save();
+    items.forEach(item => {
+        total += item.finalPriceSnapshot * item.quantity;
+    });
+    total = Math.round(total * 100) / 100;
+    await Session.update({ totalAmount: total }, { where: { id: sessionId } });
 }
+
+exports.getCart = async (req, res, next) => {
+    try {
+        const { sessionId } = req.params;
+
+        const session = await Session.findByPk(sessionId);
+        if (!session) return res.status(404).json({ error: 'Session not found' });
+
+        const items = await CartItem.findAll({
+            where: { sessionId },
+            include: [{ model: Product, attributes: ['id', 'name', 'barcode', 'price'] }]
+        });
+
+        const cartItems = items.map(item => ({
+            cartItemId: item.id,
+            productId: item.productId,
+            name: item.product.name,
+            barcode: item.product.barcode,
+            quantity: item.quantity,
+            originalPrice: item.priceSnapshot,
+            finalPrice: item.finalPriceSnapshot,
+            discountApplied: item.discountApplied,
+            discountType: item.discountType,
+            discountValue: item.discountValue,
+            savingsPerUnit: item.savings,
+            totalSavings: Math.round(item.savings * item.quantity * 100) / 100,
+            lineTotal: Math.round(item.finalPriceSnapshot * item.quantity * 100) / 100
+        }));
+
+        const totalSavings = cartItems.reduce((sum, i) => sum + i.totalSavings, 0);
+
+        res.json({
+            sessionId,
+            status: session.status,
+            items: cartItems,
+            totalAmount: session.totalAmount,
+            totalSavings: Math.round(totalSavings * 100) / 100
+        });
+    } catch (error) {
+        console.error('Get Cart Error:', error);
+        next(error);
+    }
+};
+
+exports.removeFromCart = async (req, res, next) => {
+    try {
+        const { sessionId, productId } = req.body;
+
+        const session = await Session.findByPk(sessionId);
+        if (!session || session.status !== 'ACTIVE') {
+            return res.status(400).json({ error: 'Invalid or inactive session' });
+        }
+
+        const deleted = await CartItem.destroy({
+            where: { sessionId, productId }
+        });
+
+        if (!deleted) return res.status(404).json({ error: 'Item not found in cart' });
+
+        await calculateTotal(sessionId);
+        const updatedSession = await Session.findByPk(sessionId);
+
+        res.json({ message: 'Item removed', totalAmount: updatedSession.totalAmount });
+    } catch (error) {
+        console.error('Remove from Cart Error:', error);
+        next(error);
+    }
+};
+
+exports.updateQuantity = async (req, res, next) => {
+    try {
+        const { sessionId, productId, quantity } = req.body;
+
+        if (quantity < 1) {
+            return res.status(400).json({ error: 'Quantity must be at least 1. Use remove endpoint to delete item.' });
+        }
+
+        const session = await Session.findByPk(sessionId);
+        if (!session || session.status !== 'ACTIVE') {
+            return res.status(400).json({ error: 'Invalid or inactive session' });
+        }
+
+        const item = await CartItem.findOne({ where: { sessionId, productId } });
+        if (!item) return res.status(404).json({ error: 'Item not found in cart' });
+
+        item.quantity = quantity;
+        await item.save();
+
+        await calculateTotal(sessionId);
+        const updatedSession = await Session.findByPk(sessionId);
+
+        res.json({ message: 'Quantity updated', totalAmount: updatedSession.totalAmount });
+    } catch (error) {
+        console.error('Update Quantity Error:', error);
+        next(error);
+    }
+};

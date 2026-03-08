@@ -1,0 +1,1159 @@
+
+> backend@1.0.0 pretest
+> NODE_ENV=test node scripts/sync-test-db.js
+
+[dotenv@17.2.3] injecting env (11) from .env -- tip: ⚙️  override existing env vars with { override: true }
+--- DATABASE CONNECTION INITIALIZED ---
+NODE_ENV: test | DB_NAME: supercart_db | USED_DB: supercart_test
+Test DB Authenticated.
+Executing (default): DROP TABLE IF EXISTS "cart_items" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_cart_items_discountType";
+Executing (default): DROP TABLE IF EXISTS "sessions" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_sessions_status";
+Executing (default): DROP TABLE IF EXISTS "products" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_products_discountType";
+Executing (default): DROP TABLE IF EXISTS "stores" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_stores_planTier";
+Executing (default): DROP TABLE IF EXISTS "users" CASCADE;
+Executing (default): SELECT DISTINCT tc.constraint_name as constraint_name, tc.constraint_schema as constraint_schema, tc.constraint_catalog as constraint_catalog, tc.table_name as table_name,tc.table_schema as table_schema,tc.table_catalog as table_catalog,tc.initially_deferred as initially_deferred,tc.is_deferrable as is_deferrable,kcu.column_name as column_name,ccu.table_schema  AS referenced_table_schema,ccu.table_catalog  AS referenced_table_catalog,ccu.table_name  AS referenced_table_name,ccu.column_name AS referenced_column_name FROM information_schema.table_constraints AS tc JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name WHERE constraint_type = 'FOREIGN KEY' AND tc.table_name = 'users' AND tc.table_catalog = 'supercart_test'
+Executing (default): SELECT DISTINCT tc.constraint_name as constraint_name, tc.constraint_schema as constraint_schema, tc.constraint_catalog as constraint_catalog, tc.table_name as table_name,tc.table_schema as table_schema,tc.table_catalog as table_catalog,tc.initially_deferred as initially_deferred,tc.is_deferrable as is_deferrable,kcu.column_name as column_name,ccu.table_schema  AS referenced_table_schema,ccu.table_catalog  AS referenced_table_catalog,ccu.table_name  AS referenced_table_name,ccu.column_name AS referenced_column_name FROM information_schema.table_constraints AS tc JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name WHERE constraint_type = 'FOREIGN KEY' AND tc.table_name = 'stores' AND tc.table_catalog = 'supercart_test'
+Executing (default): SELECT DISTINCT tc.constraint_name as constraint_name, tc.constraint_schema as constraint_schema, tc.constraint_catalog as constraint_catalog, tc.table_name as table_name,tc.table_schema as table_schema,tc.table_catalog as table_catalog,tc.initially_deferred as initially_deferred,tc.is_deferrable as is_deferrable,kcu.column_name as column_name,ccu.table_schema  AS referenced_table_schema,ccu.table_catalog  AS referenced_table_catalog,ccu.table_name  AS referenced_table_name,ccu.column_name AS referenced_column_name FROM information_schema.table_constraints AS tc JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name WHERE constraint_type = 'FOREIGN KEY' AND tc.table_name = 'products' AND tc.table_catalog = 'supercart_test'
+Executing (default): SELECT DISTINCT tc.constraint_name as constraint_name, tc.constraint_schema as constraint_schema, tc.constraint_catalog as constraint_catalog, tc.table_name as table_name,tc.table_schema as table_schema,tc.table_catalog as table_catalog,tc.initially_deferred as initially_deferred,tc.is_deferrable as is_deferrable,kcu.column_name as column_name,ccu.table_schema  AS referenced_table_schema,ccu.table_catalog  AS referenced_table_catalog,ccu.table_name  AS referenced_table_name,ccu.column_name AS referenced_column_name FROM information_schema.table_constraints AS tc JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name WHERE constraint_type = 'FOREIGN KEY' AND tc.table_name = 'sessions' AND tc.table_catalog = 'supercart_test'
+Executing (default): SELECT DISTINCT tc.constraint_name as constraint_name, tc.constraint_schema as constraint_schema, tc.constraint_catalog as constraint_catalog, tc.table_name as table_name,tc.table_schema as table_schema,tc.table_catalog as table_catalog,tc.initially_deferred as initially_deferred,tc.is_deferrable as is_deferrable,kcu.column_name as column_name,ccu.table_schema  AS referenced_table_schema,ccu.table_catalog  AS referenced_table_catalog,ccu.table_name  AS referenced_table_name,ccu.column_name AS referenced_column_name FROM information_schema.table_constraints AS tc JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name WHERE constraint_type = 'FOREIGN KEY' AND tc.table_name = 'cart_items' AND tc.table_catalog = 'supercart_test'
+Executing (default): DROP TABLE IF EXISTS "users" CASCADE;
+Executing (default): DROP TABLE IF EXISTS "stores" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_stores_planTier";
+Executing (default): DROP TABLE IF EXISTS "products" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_products_discountType";
+Executing (default): DROP TABLE IF EXISTS "sessions" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_sessions_status";
+Executing (default): DROP TABLE IF EXISTS "cart_items" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_cart_items_discountType";
+Executing (default): DROP TABLE IF EXISTS "users" CASCADE;
+Executing (default): CREATE TABLE IF NOT EXISTS "users" ("id"   SERIAL , "phone" VARCHAR(255) NOT NULL UNIQUE, "trustScore" INTEGER DEFAULT 100, "isFlagged" BOOLEAN DEFAULT false, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL, PRIMARY KEY ("id"));
+Executing (default): SELECT i.relname AS name, ix.indisprimary AS primary, ix.indisunique AS unique, ix.indkey AS indkey, array_agg(a.attnum) as column_indexes, array_agg(a.attname) AS column_names, pg_get_indexdef(ix.indexrelid) AS definition FROM pg_class t, pg_class i, pg_index ix, pg_attribute a WHERE t.oid = ix.indrelid AND i.oid = ix.indexrelid AND a.attrelid = t.oid AND t.relkind = 'r' and t.relname = 'users' GROUP BY i.relname, ix.indexrelid, ix.indisprimary, ix.indisunique, ix.indkey ORDER BY i.relname;
+Executing (default): DROP TABLE IF EXISTS "stores" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_stores_planTier";
+Executing (default): SELECT t.typname enum_name, array_agg(e.enumlabel ORDER BY enumsortorder) enum_value FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'public' AND t.typname='enum_stores_planTier' GROUP BY 1
+Executing (default): DROP TYPE IF EXISTS "public"."enum_stores_planTier"; DO 'BEGIN CREATE TYPE "public"."enum_stores_planTier" AS ENUM(''Starter'', ''Growth'', ''Enterprise''); EXCEPTION WHEN duplicate_object THEN null; END';
+Executing (default): CREATE TABLE IF NOT EXISTS "stores" ("id"   SERIAL , "name" VARCHAR(255) NOT NULL, "location" VARCHAR(255), "upiId" VARCHAR(255), "shopId" VARCHAR(255) UNIQUE, "passwordHash" VARCHAR(255), "planTier" "public"."enum_stores_planTier" DEFAULT 'Starter', "planExpiresAt" TIMESTAMP WITH TIME ZONE, "gracePeriodEndsAt" TIMESTAMP WITH TIME ZONE, "isLocked" BOOLEAN DEFAULT false, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL, PRIMARY KEY ("id"));
+Executing (default): SELECT i.relname AS name, ix.indisprimary AS primary, ix.indisunique AS unique, ix.indkey AS indkey, array_agg(a.attnum) as column_indexes, array_agg(a.attname) AS column_names, pg_get_indexdef(ix.indexrelid) AS definition FROM pg_class t, pg_class i, pg_index ix, pg_attribute a WHERE t.oid = ix.indrelid AND i.oid = ix.indexrelid AND a.attrelid = t.oid AND t.relkind = 'r' and t.relname = 'stores' GROUP BY i.relname, ix.indexrelid, ix.indisprimary, ix.indisunique, ix.indkey ORDER BY i.relname;
+Executing (default): DROP TABLE IF EXISTS "products" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_products_discountType";
+Executing (default): SELECT t.typname enum_name, array_agg(e.enumlabel ORDER BY enumsortorder) enum_value FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'public' AND t.typname='enum_products_discountType' GROUP BY 1
+Executing (default): DROP TYPE IF EXISTS "public"."enum_products_discountType"; DO 'BEGIN CREATE TYPE "public"."enum_products_discountType" AS ENUM(''PERCENTAGE'', ''FLAT''); EXCEPTION WHEN duplicate_object THEN null; END';
+Executing (default): CREATE TABLE IF NOT EXISTS "products" ("id"   SERIAL , "barcode" VARCHAR(255) NOT NULL, "name" VARCHAR(255) NOT NULL, "price" FLOAT NOT NULL, "storeId" INTEGER REFERENCES "stores" ("id") ON DELETE CASCADE ON UPDATE CASCADE, "discountType" "public"."enum_products_discountType" DEFAULT NULL, "discountValue" FLOAT DEFAULT NULL, "discountExpiresAt" TIMESTAMP WITH TIME ZONE DEFAULT NULL, "isDiscountActive" BOOLEAN DEFAULT false, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL, PRIMARY KEY ("id"));
+Executing (default): SELECT i.relname AS name, ix.indisprimary AS primary, ix.indisunique AS unique, ix.indkey AS indkey, array_agg(a.attnum) as column_indexes, array_agg(a.attname) AS column_names, pg_get_indexdef(ix.indexrelid) AS definition FROM pg_class t, pg_class i, pg_index ix, pg_attribute a WHERE t.oid = ix.indrelid AND i.oid = ix.indexrelid AND a.attrelid = t.oid AND t.relkind = 'r' and t.relname = 'products' GROUP BY i.relname, ix.indexrelid, ix.indisprimary, ix.indisunique, ix.indkey ORDER BY i.relname;
+Executing (default): CREATE UNIQUE INDEX "products_barcode_store_id" ON "products" ("barcode", "storeId")
+Executing (default): DROP TABLE IF EXISTS "sessions" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_sessions_status";
+Executing (default): SELECT t.typname enum_name, array_agg(e.enumlabel ORDER BY enumsortorder) enum_value FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'public' AND t.typname='enum_sessions_status' GROUP BY 1
+Executing (default): DROP TYPE IF EXISTS "public"."enum_sessions_status"; DO 'BEGIN CREATE TYPE "public"."enum_sessions_status" AS ENUM(''ACTIVE'', ''PAID'', ''USED'', ''EXPIRED'', ''FLAGGED''); EXCEPTION WHEN duplicate_object THEN null; END';
+Executing (default): CREATE TABLE IF NOT EXISTS "sessions" ("id"   SERIAL , "status" "public"."enum_sessions_status" DEFAULT 'ACTIVE', "totalAmount" FLOAT DEFAULT '0', "expiresAt" TIMESTAMP WITH TIME ZONE, "exitToken" TEXT, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL, "userId" INTEGER REFERENCES "users" ("id") ON DELETE SET NULL ON UPDATE CASCADE, "storeId" INTEGER REFERENCES "stores" ("id") ON DELETE SET NULL ON UPDATE CASCADE, PRIMARY KEY ("id"));
+Executing (default): SELECT i.relname AS name, ix.indisprimary AS primary, ix.indisunique AS unique, ix.indkey AS indkey, array_agg(a.attnum) as column_indexes, array_agg(a.attname) AS column_names, pg_get_indexdef(ix.indexrelid) AS definition FROM pg_class t, pg_class i, pg_index ix, pg_attribute a WHERE t.oid = ix.indrelid AND i.oid = ix.indexrelid AND a.attrelid = t.oid AND t.relkind = 'r' and t.relname = 'sessions' GROUP BY i.relname, ix.indexrelid, ix.indisprimary, ix.indisunique, ix.indkey ORDER BY i.relname;
+Executing (default): DROP TABLE IF EXISTS "cart_items" CASCADE;
+Executing (default): DROP TYPE IF EXISTS "public"."enum_cart_items_discountType";
+Executing (default): SELECT t.typname enum_name, array_agg(e.enumlabel ORDER BY enumsortorder) enum_value FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'public' AND t.typname='enum_cart_items_discountType' GROUP BY 1
+Executing (default): DROP TYPE IF EXISTS "public"."enum_cart_items_discountType"; DO 'BEGIN CREATE TYPE "public"."enum_cart_items_discountType" AS ENUM(''PERCENTAGE'', ''FLAT''); EXCEPTION WHEN duplicate_object THEN null; END';
+Executing (default): CREATE TABLE IF NOT EXISTS "cart_items" ("quantity" INTEGER DEFAULT 1, "priceSnapshot" FLOAT DEFAULT '0', "finalPriceSnapshot" FLOAT DEFAULT '0', "discountApplied" BOOLEAN DEFAULT false, "discountType" "public"."enum_cart_items_discountType", "discountValue" FLOAT, "savings" FLOAT DEFAULT '0', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL, "sessionId" INTEGER  REFERENCES "sessions" ("id") ON DELETE CASCADE ON UPDATE CASCADE, "productId" INTEGER  REFERENCES "products" ("id") ON DELETE CASCADE ON UPDATE CASCADE, PRIMARY KEY ("sessionId","productId"));
+Executing (default): SELECT i.relname AS name, ix.indisprimary AS primary, ix.indisunique AS unique, ix.indkey AS indkey, array_agg(a.attnum) as column_indexes, array_agg(a.attname) AS column_names, pg_get_indexdef(ix.indexrelid) AS definition FROM pg_class t, pg_class i, pg_index ix, pg_attribute a WHERE t.oid = ix.indrelid AND i.oid = ix.indexrelid AND a.attrelid = t.oid AND t.relkind = 'r' and t.relname = 'cart_items' GROUP BY i.relname, ix.indexrelid, ix.indisprimary, ix.indisunique, ix.indkey ORDER BY i.relname;
+Test DB Synced.
+
+> backend@1.0.0 test
+> NODE_ENV=test jest --runInBand --forceExit
+
+● Validation Warning:
+
+  Unknown option "setupFilesAfterFramework" with value ["./tests/setup.js"] was found.
+  This is probably a typing mistake. Fixing it will remove this message.
+
+  Configuration Documentation:
+  https://jestjs.io/docs/configuration
+
+● Validation Warning:
+
+  Unknown option "setupFilesAfterFramework" with value ["./tests/setup.js"] was found.
+  This is probably a typing mistake. Fixing it will remove this message.
+
+  Configuration Documentation:
+  https://jestjs.io/docs/configuration
+
+[0mPOST /api/cart/start [32m200[0m 18.920 ms - 177[0m
+[0mPOST /api/cart/start [32m200[0m 4.602 ms - 177[0m
+[0mPOST /api/cart/add [32m200[0m 12.863 ms - 697[0m
+[0mPOST /api/cart/start [32m200[0m 4.526 ms - 177[0m
+[0mPOST /api/cart/add [32m200[0m 6.506 ms - 706[0m
+[0mGET /api/cart/3 [31m500[0m 22.451 ms - 980[0m
+[0mPOST /api/cart/start [32m200[0m 4.106 ms - 177[0m
+[0mPOST /api/cart/add [32m200[0m 5.767 ms - 697[0m
+[0mPOST /api/cart/remove [32m200[0m 3.264 ms - 42[0m
+[0mGET /api/cart/4 [31m500[0m 1.539 ms - 980[0m
+FAIL tests/integration/cart.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (11) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      --- DATABASE CONNECTION INITIALIZED ---
+
+      at Object.log (src/config/database.js:4:9)
+
+    console.log
+      NODE_ENV: test | DB_NAME: supercart_db | USED_DB: supercart_test
+
+      at Object.log (src/config/database.js:5:9)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":1,"storeId":1}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Start Session Request Body: { userId: 1, storeId: 1 }
+
+      at log (src/controllers/cart.controller.js:89:17)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":2,"storeId":2}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Start Session Request Body: { userId: 2, storeId: 2 }
+
+      at log (src/controllers/cart.controller.js:89:17)
+
+    console.log
+      [REQ] POST /api/cart/add
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"sessionId":2,"barcode":"CART-TEST-001","quantity":2}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Add to Cart Request: { sessionId: 2, barcode: 'CART-TEST-001', quantity: 2 }
+
+      at log (src/controllers/cart.controller.js:8:17)
+
+    console.log
+      Session found: 2 StoreId: 2
+
+      at log (src/controllers/cart.controller.js:23:17)
+
+    console.log
+      Product search - Barcode: CART-TEST-001 StoreId: 2
+
+      at log (src/controllers/cart.controller.js:33:17)
+
+    console.log
+      Product found: 2
+
+      at log (src/controllers/cart.controller.js:34:17)
+
+    console.log
+      Created new CartItem for sessionId=2, productId=2, quantity=2
+
+      at log (src/controllers/cart.controller.js:69:21)
+
+    console.log
+      Session total updated: 200
+
+      at log (src/controllers/cart.controller.js:76:17)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":3,"storeId":3}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Start Session Request Body: { userId: 3, storeId: 3 }
+
+      at log (src/controllers/cart.controller.js:89:17)
+
+    console.log
+      [REQ] POST /api/cart/add
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"sessionId":3,"barcode":"DISC-TEST-001","quantity":1}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Add to Cart Request: { sessionId: 3, barcode: 'DISC-TEST-001', quantity: 1 }
+
+      at log (src/controllers/cart.controller.js:8:17)
+
+    console.log
+      Session found: 3 StoreId: 3
+
+      at log (src/controllers/cart.controller.js:23:17)
+
+    console.log
+      Product search - Barcode: DISC-TEST-001 StoreId: 3
+
+      at log (src/controllers/cart.controller.js:33:17)
+
+    console.log
+      Product found: 4
+
+      at log (src/controllers/cart.controller.js:34:17)
+
+    console.log
+      Created new CartItem for sessionId=3, productId=4, quantity=1
+
+      at log (src/controllers/cart.controller.js:69:21)
+
+    console.log
+      Session total updated: 90
+
+      at log (src/controllers/cart.controller.js:76:17)
+
+    console.log
+      [REQ] GET /api/cart/3
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.error
+      Get Cart Error: EagerLoadingError [SequelizeEagerLoadingError]: product is not associated to cart_item!
+          at cart_item._getIncludedAssociation (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:742:13)
+          at cart_item._validateIncludedElement (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:646:53)
+          at /Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:542:37
+          at Array.map (<anonymous>)
+          at cart_item._validateIncludedElements (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:537:39)
+          at cart_item.findAll (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:1794:12)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at exports.getCart (/Users/ashutoshsharma/Desktop/SuperCart/backend/src/controllers/cart.controller.js:177:23)
+
+      206 |         });
+      207 |     } catch (error) {
+    > 208 |         console.error('Get Cart Error:', error);
+          |                 ^
+      209 |         next(error);
+      210 |     }
+      211 | };
+
+      at error (src/controllers/cart.controller.js:208:17)
+
+    console.error
+      [ERROR] GET /api/cart/3: EagerLoadingError [SequelizeEagerLoadingError]: product is not associated to cart_item!
+          at cart_item._getIncludedAssociation (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:742:13)
+          at cart_item._validateIncludedElement (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:646:53)
+          at /Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:542:37
+          at Array.map (<anonymous>)
+          at cart_item._validateIncludedElements (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:537:39)
+          at cart_item.findAll (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:1794:12)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at exports.getCart (/Users/ashutoshsharma/Desktop/SuperCart/backend/src/controllers/cart.controller.js:177:23)
+
+      1 | module.exports = (err, req, res, next) => {
+    > 2 |     console.error(`[ERROR] ${req.method} ${req.url}:`, err);
+        |             ^
+      3 |
+      4 |     // Never leak stack traces in production
+      5 |     if (process.env.NODE_ENV === 'production') {
+
+      at error (src/middleware/errorHandler.js:2:13)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":4,"storeId":4}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Start Session Request Body: { userId: 4, storeId: 4 }
+
+      at log (src/controllers/cart.controller.js:89:17)
+
+    console.log
+      [REQ] POST /api/cart/add
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"sessionId":4,"barcode":"CART-TEST-001","quantity":1}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Add to Cart Request: { sessionId: 4, barcode: 'CART-TEST-001', quantity: 1 }
+
+      at log (src/controllers/cart.controller.js:8:17)
+
+    console.log
+      Session found: 4 StoreId: 4
+
+      at log (src/controllers/cart.controller.js:23:17)
+
+    console.log
+      Product search - Barcode: CART-TEST-001 StoreId: 4
+
+      at log (src/controllers/cart.controller.js:33:17)
+
+    console.log
+      Product found: 5
+
+      at log (src/controllers/cart.controller.js:34:17)
+
+    console.log
+      Created new CartItem for sessionId=4, productId=5, quantity=1
+
+      at log (src/controllers/cart.controller.js:69:21)
+
+    console.log
+      Session total updated: 100
+
+      at log (src/controllers/cart.controller.js:76:17)
+
+    console.log
+      [REQ] POST /api/cart/remove
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"sessionId":4,"productId":5}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] GET /api/cart/4
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.error
+      Get Cart Error: EagerLoadingError [SequelizeEagerLoadingError]: product is not associated to cart_item!
+          at cart_item._getIncludedAssociation (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:742:13)
+          at cart_item._validateIncludedElement (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:646:53)
+          at /Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:542:37
+          at Array.map (<anonymous>)
+          at cart_item._validateIncludedElements (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:537:39)
+          at cart_item.findAll (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:1794:12)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at exports.getCart (/Users/ashutoshsharma/Desktop/SuperCart/backend/src/controllers/cart.controller.js:177:23)
+
+      206 |         });
+      207 |     } catch (error) {
+    > 208 |         console.error('Get Cart Error:', error);
+          |                 ^
+      209 |         next(error);
+      210 |     }
+      211 | };
+
+      at error (src/controllers/cart.controller.js:208:17)
+
+    console.error
+      [ERROR] GET /api/cart/4: EagerLoadingError [SequelizeEagerLoadingError]: product is not associated to cart_item!
+          at cart_item._getIncludedAssociation (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:742:13)
+          at cart_item._validateIncludedElement (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:646:53)
+          at /Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:542:37
+          at Array.map (<anonymous>)
+          at cart_item._validateIncludedElements (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:537:39)
+          at cart_item.findAll (/Users/ashutoshsharma/Desktop/SuperCart/backend/node_modules/sequelize/src/model.js:1794:12)
+          at processTicksAndRejections (node:internal/process/task_queues:103:5)
+          at exports.getCart (/Users/ashutoshsharma/Desktop/SuperCart/backend/src/controllers/cart.controller.js:177:23)
+
+      1 | module.exports = (err, req, res, next) => {
+    > 2 |     console.error(`[ERROR] ${req.method} ${req.url}:`, err);
+        |             ^
+      3 |
+      4 |     // Never leak stack traces in production
+      5 |     if (process.env.NODE_ENV === 'production') {
+
+      at error (src/middleware/errorHandler.js:2:13)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":5,"storeId":5}
+
+      at log (src/app.js:57:17)
+
+  ● Cart Flow › cart total reflects discounted price
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 90
+    Received: undefined
+
+      52 |
+      53 |         const cartRes = await request(app).get(`/api/cart/${sessionId}`);
+    > 54 |         expect(cartRes.body.totalAmount).toBe(90); // 10% off ₹100
+         |                                          ^
+      55 |         expect(cartRes.body.items[0].discountApplied).toBe(true);
+      56 |         expect(cartRes.body.items[0].originalPrice).toBe(100);
+      57 |         expect(cartRes.body.items[0].finalPrice).toBe(90);
+
+      at Object.toBe (tests/integration/cart.test.js:54:42)
+
+  ● Cart Flow › removes item from cart
+
+    TypeError: Cannot read properties of undefined (reading 'length')
+
+      72 |
+      73 |         const cartRes = await request(app).get(`/api/cart/${sessionId}`);
+    > 74 |         expect(cartRes.body.items.length).toBe(0);
+         |                                   ^
+      75 |         expect(cartRes.body.totalAmount).toBe(0);
+      76 |     });
+      77 |
+
+      at Object.length (tests/integration/cart.test.js:74:35)
+
+[0mPOST /api/cart/start [33m403[0m 1.520 ms - 64[0m
+[0mGET /api/admin/transactions [33m401[0m 0.662 ms - 29[0m
+FAIL tests/integration/security.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (11) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      --- DATABASE CONNECTION INITIALIZED ---
+
+      at Object.log (src/config/database.js:4:9)
+
+    console.log
+      NODE_ENV: test | DB_NAME: supercart_db | USED_DB: supercart_test
+
+      at Object.log (src/config/database.js:5:9)
+
+    console.log
+      [REQ] GET /api/admin/transactions
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-register
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"name":"Sec Test Store","location":"Test Location","password":"SecTest123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-QCS34D","password":"SecTest123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] GET /api/admin/transactions
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] GET /api/subscription/status
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] GET /api/subscription/status
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/cart/add
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"sessionId":"not-a-number","barcode":"","quantity":-5}
+
+      at log (src/app.js:57:17)
+
+    console.error
+      Validation Error for POST /add : [
+        { field: 'sessionId', message: 'Invalid sessionId' },
+        { field: 'barcode', message: 'Invalid barcode' },
+        { field: 'quantity', message: 'Quantity must be 1-100' }
+      ]
+
+       6 |     if (!errors.isEmpty()) {
+       7 |         const errorDetails = errors.array().map(e => ({ field: e.path, message: e.msg }));
+    >  8 |         console.error('Validation Error for', req.method, req.url, ':', errorDetails);
+         |                 ^
+       9 |         return res.status(400).json({
+      10 |             error: 'Validation failed',
+      11 |             details: errorDetails
+
+      at error (src/middleware/validators.js:8:17)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at next (node_modules/router/lib/route.js:157:13)
+      at middleware (node_modules/express-validator/lib/middlewares/check.js:16:13)
+
+  ● Security › admin routes reject non-admin tokens
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 401
+
+      22 |             .set('Authorization', `Bearer ${loginRes.body.token}`);
+      23 |
+    > 24 |         expect(res.status).toBe(403);
+         |                            ^
+      25 |     });
+      26 |
+      27 |     test('subscription routes reject unauthenticated requests', async () => {
+
+      at Object.toBe (tests/integration/security.test.js:24:28)
+
+[0mPOST /api/auth/store-register [32m200[0m 135.543 ms - 289[0m
+[0mPOST /api/auth/store-login [33m403[0m 1.677 ms - 64[0m
+[0mGET /api/admin/transactions [33m401[0m 0.549 ms - 36[0m
+[0mGET /api/subscription/status [33m401[0m 0.401 ms - 29[0m
+[0mGET /api/subscription/status [33m401[0m 0.581 ms - 36[0m
+[0mPOST /api/cart/add [33m400[0m 0.825 ms - 197[0m
+[0mPOST /api/auth/store-login [32m200[0m 110.134 ms - 599[0m
+[0mPOST /api/auth/store-login [32m200[0m 104.299 ms - 599[0m
+[0mPOST /api/products [32m200[0m 5.733 ms - 239[0m
+[0mPOST /api/auth/store-login [32m200[0m 103.909 ms - 599[0m
+[0mPOST /api/auth/store-login [32m200[0m 104.015 ms - 601[0m
+[0mGET /api/products/store [32m200[0m 3.487 ms - 2[0m
+[0mPOST /api/auth/store-login [32m200[0m 104.384 ms - 601[0m
+[0mPOST /api/auth/store-login [32m200[0m 103.555 ms - 601[0m
+[0mPUT /api/products/9 [33m404[0m 2.255 ms - 43[0m
+[0mPOST /api/auth/store-login [32m200[0m 102.447 ms - 601[0m
+[0mPOST /api/auth/store-login [32m200[0m 102.555 ms - 601[0m
+[0mDELETE /api/products/10 [33m404[0m 1.768 ms - 43[0m
+[0mPOST /api/auth/store-login [32m200[0m 104.248 ms - 601[0m
+[0mPOST /api/auth/store-login [32m200[0m 103.882 ms - 601[0m
+[0mPOST /api/products [32m200[0m 2.879 ms - 251[0m
+[0mPOST /api/auth/store-login [32m200[0m 111.346 ms - 601[0m
+PASS tests/integration/inventory.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (11) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      --- DATABASE CONNECTION INITIALIZED ---
+
+      at Object.log (src/config/database.js:4:9)
+
+    console.log
+      NODE_ENV: test | DB_NAME: supercart_db | USED_DB: supercart_test
+
+      at Object.log (src/config/database.js:5:9)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-FT0YZ0","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-W31L8K","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/products
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"barcode":"INV-001","name":"Test Item","price":50}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-1ZICNC","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-K6P2WU","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] GET /api/products/store
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-QYCEA8","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-7DJDZR","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] PUT /api/products/9
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"name":"Hacked Name"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-VFTBWH","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-YTFUJ7","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] DELETE /api/products/10
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-DZ0XCI","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-ZEGYZD","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/products
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"barcode":"SHARED-BARCODE","name":"Same Product","price":40}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-8AC41R","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-DZN4NM","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/products
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"barcode":"DUPE-BARCODE","name":"Duplicate","price":40}
+
+      at log (src/app.js:57:17)
+
+    console.error
+      Captured SequelizeUniqueConstraintError in addProduct: [{"message":"barcode must be unique","type":"unique violation","path":"barcode","value":"DUPE-BARCODE","origin":"DB","instance":{"id":null,"barcode":"DUPE-BARCODE","name":"Duplicate","price":40,"storeId":17,"discountType":null,"discountValue":null,"discountExpiresAt":null,"isDiscountActive":false,"updatedAt":"2026-03-05T21:26:09.007Z","createdAt":"2026-03-05T21:26:09.007Z"},"validatorKey":"not_unique","validatorName":null,"validatorArgs":[]},{"message":"storeId must be unique","type":"unique violation","path":"storeId","value":"17","origin":"DB","instance":{"id":null,"barcode":"DUPE-BARCODE","name":"Duplicate","price":40,"storeId":17,"discountType":null,"discountValue":null,"discountExpiresAt":null,"isDiscountActive":false,"updatedAt":"2026-03-05T21:26:09.007Z","createdAt":"2026-03-05T21:26:09.007Z"},"validatorKey":"not_unique","validatorName":null,"validatorArgs":[]}]
+
+      74 |     } catch (error) {
+      75 |         if (error.name === 'SequelizeUniqueConstraintError') {
+    > 76 |             console.error('Captured SequelizeUniqueConstraintError in addProduct:', JSON.stringify(error.errors));
+         |                     ^
+      77 |             return res.status(400).json({ error: 'Product with this barcode already exists in your store' });
+      78 |         }
+      79 |         next(error);
+
+      at error (src/controllers/product.controller.js:76:21)
+
+[0mPOST /api/auth/store-login [32m200[0m 104.413 ms - 601[0m
+[0mPOST /api/products [33m400[0m 30.427 ms - 66[0m
+[0mPOST /api/cart/start [32m200[0m 10.263 ms - 178[0m
+[0mPOST /api/cart/start [32m200[0m 8.915 ms - 178[0m
+[0mPOST /api/cart/start [32m200[0m 3.787 ms - 178[0m
+[0mPOST /api/cart/add [33m404[0m 2.618 ms - 43[0m
+[0mPOST /api/cart/start [32m200[0m 3.562 ms - 179[0m
+PASS tests/integration/multiTenancy.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (11) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      --- DATABASE CONNECTION INITIALIZED ---
+
+      at Object.log (src/config/database.js:4:9)
+
+    console.log
+      NODE_ENV: test | DB_NAME: supercart_db | USED_DB: supercart_test
+
+      at Object.log (src/config/database.js:5:9)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":6,"storeId":19}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Start Session Request Body: { userId: 6, storeId: 19 }
+
+      at log (src/controllers/cart.controller.js:89:17)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":7,"storeId":20}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Start Session Request Body: { userId: 7, storeId: 20 }
+
+      at log (src/controllers/cart.controller.js:89:17)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":8,"storeId":21}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Start Session Request Body: { userId: 8, storeId: 21 }
+
+      at log (src/controllers/cart.controller.js:89:17)
+
+    console.log
+      [REQ] POST /api/cart/add
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"sessionId":7,"barcode":"ONLY-IN-B","quantity":1}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Add to Cart Request: { sessionId: 7, barcode: 'ONLY-IN-B', quantity: 1 }
+
+      at log (src/controllers/cart.controller.js:8:17)
+
+    console.log
+      Session found: 7 StoreId: 21
+
+      at log (src/controllers/cart.controller.js:23:17)
+
+    console.log
+      Product search - Barcode: ONLY-IN-B StoreId: 21
+
+      at log (src/controllers/cart.controller.js:33:17)
+
+    console.log
+      Product found: NOT FOUND
+
+      at log (src/controllers/cart.controller.js:34:17)
+
+    console.log
+      [REQ] POST /api/cart/start
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"userId":10,"storeId":23}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      Start Session Request Body: { userId: 10, storeId: 23 }
+
+      at log (src/controllers/cart.controller.js:89:17)
+
+[0mPOST /api/auth/store-login [32m200[0m 107.187 ms - 601[0m
+[0mPOST /api/auth/store-login [33m401[0m 103.949 ms - 31[0m
+[0mPOST /api/auth/store-login [33m403[0m 1.263 ms - 64[0m
+[0mPOST /api/auth/store-login [33m400[0m 0.650 ms - 95[0m
+PASS tests/integration/auth.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (11) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      --- DATABASE CONNECTION INITIALIZED ---
+
+      at Object.log (src/config/database.js:4:9)
+
+    console.log
+      NODE_ENV: test | DB_NAME: supercart_db | USED_DB: supercart_test
+
+      at Object.log (src/config/database.js:5:9)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-JPYS06","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-XM54VH","password":"wrongpassword"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-FNT0XV","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"INVALID","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.error
+      Validation Error for POST /store-login : [ { field: 'shopId', message: 'Invalid Shop ID format' } ]
+
+       6 |     if (!errors.isEmpty()) {
+       7 |         const errorDetails = errors.array().map(e => ({ field: e.path, message: e.msg }));
+    >  8 |         console.error('Validation Error for', req.method, req.url, ':', errorDetails);
+         |                 ^
+       9 |         return res.status(400).json({
+      10 |             error: 'Validation failed',
+      11 |             details: errorDetails
+
+      at error (src/middleware/validators.js:8:17)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at next (node_modules/router/lib/route.js:157:13)
+      at middleware (node_modules/express-validator/lib/middlewares/check.js:16:13)
+
+    console.log
+      [REQ] POST /api/auth/store-register
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"name":"New Store","location":"Mumbai, India","password":"NewPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-register
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"name":"New Store","location":"Mumbai, India","password":"weak"}
+
+      at log (src/app.js:57:17)
+
+    console.error
+      Validation Error for POST /store-register : [
+        {
+          field: 'password',
+          message: 'Password must be at least 8 characters'
+        },
+        {
+          field: 'password',
+          message: 'Password must contain uppercase, lowercase, and a number'
+        }
+      ]
+
+       6 |     if (!errors.isEmpty()) {
+       7 |         const errorDetails = errors.array().map(e => ({ field: e.path, message: e.msg }));
+    >  8 |         console.error('Validation Error for', req.method, req.url, ':', errorDetails);
+         |                 ^
+       9 |         return res.status(400).json({
+      10 |             error: 'Validation failed',
+      11 |             details: errorDetails
+
+      at error (src/middleware/validators.js:8:17)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at next (node_modules/router/lib/route.js:157:13)
+      at middleware (node_modules/express-validator/lib/middlewares/check.js:16:13)
+
+[0mPOST /api/auth/store-register [32m200[0m 106.260 ms - 285[0m
+[0mPOST /api/auth/store-register [33m400[0m 0.904 ms - 203[0m
+[0mPOST /api/auth/store-login [32m200[0m 107.533 ms - 601[0m
+[0mGET /api/subscription/status [32m200[0m 1.952 ms - 189[0m
+[0mPOST /api/auth/store-login [32m200[0m 103.980 ms - 601[0m
+[0mGET /api/subscription/status [32m200[0m 1.359 ms - 187[0m
+PASS tests/integration/subscription.test.js
+  ● Console
+
+    console.log
+      [dotenv@17.2.3] injecting env (11) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+    console.log
+      --- DATABASE CONNECTION INITIALIZED ---
+
+      at Object.log (src/config/database.js:4:9)
+
+    console.log
+      NODE_ENV: test | DB_NAME: supercart_db | USED_DB: supercart_test
+
+      at Object.log (src/config/database.js:5:9)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-RVIIBP","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] GET /api/subscription/status
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-MVDDFQ","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] GET /api/subscription/status
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] POST /api/auth/store-login
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] {"shopId":"SCRT-0DN90Y","password":"TestPass123"}
+
+      at log (src/app.js:57:17)
+
+    console.log
+      [REQ] GET /api/subscription/status
+
+      at log (src/app.js:56:17)
+
+    console.log
+      [BODY] undefined
+
+      at log (src/app.js:57:17)
+
+PASS tests/unit/shopId.test.js
+  ● Console
+
+    console.log
+      --- DATABASE CONNECTION INITIALIZED ---
+
+      at Object.log (src/config/database.js:4:9)
+
+    console.log
+      NODE_ENV: test | DB_NAME: undefined | USED_DB: supercart_test
+
+      at Object.log (src/config/database.js:5:9)
+
+PASS tests/unit/subscriptionStatus.test.js
+[0mPOST /api/auth/store-login [32m200[0m 104.447 ms - 552[0m
+[0mGET /api/subscription/status [32m200[0m 1.123 ms - 139[0m
+PASS tests/unit/discount.test.js
+
+Test Suites: 2 failed, 7 passed, 9 total
+Tests:       3 failed, 41 passed, 44 total
+Snapshots:   0 total
+Time:        7.051 s, estimated 8 s
+Ran all test suites.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

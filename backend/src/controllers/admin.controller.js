@@ -1,6 +1,6 @@
 const { Session, User, Store } = require('../models');
 
-exports.getTransactions = async (req, res) => {
+exports.getTransactions = async (req, res, next) => {
     try {
         const sessions = await Session.findAll({
             include: [
@@ -13,11 +13,11 @@ exports.getTransactions = async (req, res) => {
         res.json(sessions);
     } catch (error) {
         console.error('Transactions Error:', error);
-        res.status(500).json({ error: 'Server error' });
+        next(error);
     }
 };
 
-exports.getFlags = async (req, res) => {
+exports.getFlags = async (req, res, next) => {
     try {
         const sessions = await Session.findAll({
             where: { status: 'FLAGGED' },
@@ -30,6 +30,6 @@ exports.getFlags = async (req, res) => {
         res.json(sessions);
     } catch (error) {
         console.error('Flags Error:', error);
-        res.status(500).json({ error: 'Server error' });
+        next(error);
     }
 };

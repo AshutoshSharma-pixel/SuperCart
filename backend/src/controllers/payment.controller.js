@@ -10,7 +10,7 @@ const razorpay = new Razorpay({
 });
 
 // 1. Create Order
-exports.createOrder = async (req, res) => {
+exports.createOrder = async (req, res, next) => {
     try {
         const { sessionId } = req.body;
         const session = await Session.findByPk(sessionId);
@@ -47,12 +47,12 @@ exports.createOrder = async (req, res) => {
 
     } catch (error) {
         console.error('Create Order Error:', error);
-        res.status(500).json({ error: 'Failed to create order' });
+        next(error);
     }
 };
 
 // 2. Verify Payment
-exports.verifyPayment = async (req, res) => {
+exports.verifyPayment = async (req, res, next) => {
     try {
         const { sessionId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
@@ -70,6 +70,28 @@ exports.verifyPayment = async (req, res) => {
         if (expectedSignature === razorpay_signature) {
             // Success
             session.status = 'PAID';
+
+            const { deductStock } = require('../utils/stock');
+            const cartItems = await CartItem.findAll({
+                where: { sessionId: session.id },
+                include: [{ model: Product }]
+            });
+
+            // Deduct stock for each item sold
+            for (const item of cartItems) {
+                try {
+                    await deductStock(
+                        item.productId,
+                        session.storeId,
+                        item.quantity,
+                        session.id
+                    );
+                } catch (err) {
+                    // Log but don't fail the payment
+                    console.error(`Stock deduction failed for product ${item.productId}:`, err.message);
+                }
+            }
+
             session.expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins exit time
 
             // Generate Exit Token
@@ -94,6 +116,6 @@ exports.verifyPayment = async (req, res) => {
 
     } catch (error) {
         console.error('Verify Error:', error);
-        res.status(500).json({ error: 'Verification failed' });
+        next(error);
     }
 };

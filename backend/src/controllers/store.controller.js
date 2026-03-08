@@ -1,6 +1,6 @@
 const { Store } = require('../models');
 
-exports.getStore = async (req, res) => {
+exports.getStore = async (req, res, next) => {
     try {
         const { id } = req.params;
 
@@ -14,16 +14,16 @@ exports.getStore = async (req, res) => {
         res.json(store);
     } catch (error) {
         console.error('Get store error:', error);
-        res.status(500).json({ error: 'Server error' });
+        next(error);
     }
 };
 
-exports.createStore = async (req, res) => { // For Admin/Dev use
+exports.createStore = async (req, res, next) => { // For Admin/Dev use
     try {
         const { name, location, upiId } = req.body;
         const store = await Store.create({ name, location, upiId });
         res.json(store);
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        next(error);
     }
 };
