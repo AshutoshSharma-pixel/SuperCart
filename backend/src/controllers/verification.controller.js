@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 // 2. Session must be PAID
 // 3. Session must not be EXPIRED or USED
 // 4. On success: Mark USED
-exports.verifyExit = async (req, res) => {
+exports.verifyExit = async (req, res, next) => {
     try {
         const { token } = req.body;
 
@@ -73,7 +73,7 @@ exports.verifyExit = async (req, res) => {
 
     } catch (error) {
         console.error('Verify Error:', error);
-        res.status(500).json({ status: 'ERROR', error: 'Server error' });
+        next(error);
     }
 };
 
@@ -81,7 +81,7 @@ exports.verifyExit = async (req, res) => {
 // Rules:
 // 1. Set Session -> FLAGGED
 // 2. Reduce User Trust Score (e.g., -10)
-exports.markMismatch = async (req, res) => {
+exports.markMismatch = async (req, res, next) => {
     try {
         const { sessionId, reason } = req.body;
 
@@ -100,6 +100,6 @@ exports.markMismatch = async (req, res) => {
         res.json({ message: 'Session flagged and trust score updated', newScore: session.user.trustScore });
 
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        next(error);
     }
 };

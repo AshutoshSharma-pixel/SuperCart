@@ -1,8 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const cartController = require('../controllers/cart.controller');
+const router = require('express').Router();
+const checkSubscription = require('../middleware/subscription.middleware').checkSubscription;
+const ctrl = require('../controllers/cart.controller');
 
-router.post('/start', cartController.startSession);
-router.post('/add', cartController.addToCart);
+const { validateStartSession, validateAddToCart, validateRemoveFromCart, validateUpdateQuantity } = require('../middleware/validators');
+
+router.post('/start', checkSubscription, validateStartSession, ctrl.startSession);
+router.post('/add', validateAddToCart, ctrl.addToCart);
+router.post('/remove', validateRemoveFromCart, ctrl.removeFromCart);
+router.put('/quantity', validateUpdateQuantity, ctrl.updateQuantity);
+router.get('/:sessionId', ctrl.getCart);
 
 module.exports = router;

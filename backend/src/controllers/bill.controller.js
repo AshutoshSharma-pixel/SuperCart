@@ -1,7 +1,7 @@
 const PDFDocument = require('pdfkit');
 const { Session, Product, CartItem, Store } = require('../models');
 
-exports.generateBill = async (req, res) => {
+exports.generateBill = async (req, res, next) => {
     try {
         const { sessionId } = req.params;
 
@@ -56,14 +56,26 @@ exports.generateBill = async (req, res) => {
 
         // Items
         let yPosition = doc.y;
+        let totalSavings = 0;
         session.products.forEach((product) => {
             const qty = product.cart_item.quantity;
-            const price = product.cart_item.priceSnapshot;
-            const total = qty * price;
+            const originalPrice = product.cart_item.priceSnapshot;
+            const finalPrice = product.cart_item.finalPriceSnapshot;
+            const discountApplied = product.cart_item.discountApplied;
+            const total = finalPrice * qty;
+            totalSavings += (product.cart_item.savings || 0) * qty;
 
-            doc.fontSize(9).text(product.name, 50, yPosition, { width: 250 });
-            doc.text(qty.toString(), 300, yPosition, { width: 50, align: 'center' });
-            doc.text(`₹${price.toFixed(2)}`, 350, yPosition, { width: 80, align: 'right' });
+            doc.fontSize(9).text(product.name, 50, yPosition, { width: 200 });
+
+            if (discountApplied) {
+                // Show strikethrough original price and discounted price
+                doc.fontSize(8).text(`₹${originalPrice.toFixed(2)}`, 255, yPosition, { width: 60, align: 'right', strike: true });
+                doc.fontSize(9).text(`₹${finalPrice.toFixed(2)}`, 320, yPosition, { width: 60, align: 'right' });
+            } else {
+                doc.fontSize(9).text(`₹${finalPrice.toFixed(2)}`, 320, yPosition, { width: 60, align: 'right' });
+            }
+
+            doc.text(qty.toString(), 385, yPosition, { width: 40, align: 'center' });
             doc.text(`₹${total.toFixed(2)}`, 430, yPosition, { width: 100, align: 'right' });
 
             yPosition += 20;
@@ -81,6 +93,13 @@ exports.generateBill = async (req, res) => {
         doc.fontSize(14).text(`₹${session.totalAmount.toFixed(2)}`, 430, doc.y, { width: 100, align: 'right' });
         doc.moveDown(2);
 
+        if (totalSavings > 0) {
+            doc.fontSize(10).fillColor('green')
+                .text(`You saved: ₹${totalSavings.toFixed(2)}`, { align: 'center' });
+            doc.fillColor('black');
+            doc.moveDown();
+        }
+
         // Payment status
         doc.fontSize(10).text('Payment Status: PAID', { align: 'center' });
         doc.fontSize(8).text(`Exit Token: ${session.exitToken}`, { align: 'center' });
@@ -95,6 +114,6 @@ exports.generateBill = async (req, res) => {
 
     } catch (error) {
         console.error('Generate Bill Error:', error);
-        res.status(500).json({ error: 'Failed to generate bill' });
+        next(error);
     }
 };

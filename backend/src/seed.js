@@ -10,11 +10,18 @@ const seed = async () => {
         await db.sync({ force: true });
         console.log('Tables created');
 
+        const bcrypt = require('bcrypt');
+        const passwordHash = await bcrypt.hash('admin123', 10);
+
         // Create Store
         const store = await Store.create({
             name: 'SuperMart Indiranagar',
             location: '100ft Road, Indiranagar, Bangalore',
-            upiId: 'supermart@upi'
+            upiId: 'supermart@upi',
+            shopId: 'supermart01',
+            passwordHash,
+            planTier: 'Growth',
+            planExpiresAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
         });
         console.log(`Store Created: ${store.name} (ID: ${store.id})`);
 
@@ -34,7 +41,7 @@ const seed = async () => {
 
         // Create Test User
         const user = await User.create({
-            phone: '9999999999',
+            phone: '7004595397',
             trustScore: 100
         });
         console.log(`Test User Created: ${user.phone}`);
