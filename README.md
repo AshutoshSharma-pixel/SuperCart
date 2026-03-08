@@ -61,174 +61,73 @@ SuperCart/
 - **Vite** - Build tool
 - **TypeScript** - Type safety
 
-## 📦 Installation
+## Local Setup
 
 ### Prerequisites
-- Node.js (v18+)
-- PostgreSQL database
-- Expo Go app (for mobile testing)
-- Razorpay account (for payments)
+- Node.js v18+
+- PostgreSQL
+- Razorpay account
 
-### Backend Setup
-
-1. Navigate to backend directory:
+### Backend
 ```bash
 cd backend
 npm install
 ```
 
-2. Create `.env` file:
+Create `.env` (see `.env.example`):
 ```env
 PORT=5001
+NODE_ENV=development
 DB_NAME=supercart_db
-DB_USER=your_username
-DB_PASS=your_password
+DB_USER=your_db_user
+DB_PASS=your_db_password
 DB_HOST=localhost
-JWT_SECRET=your_secret_key
+JWT_SECRET=minimum_32_character_secret_key_here
 RAZORPAY_KEY_ID=your_razorpay_key
 RAZORPAY_KEY_SECRET=your_razorpay_secret
+ADMIN_USERNAME=supercart_admin
+ADMIN_PASSWORD=your_admin_password
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
-
-3. Initialize database:
 ```bash
-node src/sync.js
-node src/seed.js
+node src/seed.js   # Creates test store: shopId=supermart01, password=admin123
+npm start          # Starts server on port 5001
+npm test           # Run 62 tests
 ```
 
-4. Start server:
-```bash
-npm start
-```
-
-### Customer App Setup
-
-1. Navigate to customer-app:
-```bash
-cd customer-app
-npm install
-```
-
-2. Update API URL in `src/api.js`:
-```javascript
-const DEV_API_URL = 'http://YOUR_LOCAL_IP:5001/api';
-```
-
-3. Start Expo:
-```bash
-npm start
-```
-
-4. Scan QR code with Expo Go app
-
-### Guard App Setup
-
-Same as Customer App:
-```bash
-cd guard-app
-npm install
-npm start
-```
-
-### Admin Dashboard Setup
-
+### Admin Dashboard
 ```bash
 cd admin-dashboard
 npm install
-npm run dev
+npm run dev        # http://localhost:5173
 ```
 
-Access at `http://localhost:5173`
+---
 
-## 🎯 Usage Flow
+## Deployment
 
-### Customer Journey
+| Service | Platform |
+|---------|----------|
+| Backend + PostgreSQL | Railway |
+| Admin Dashboard | Vercel |
+| SuperCart Website | Vercel |
+| Customer + Guard Apps | EAS Build → Play Store / App Store |
 
-1. **Enter Store**: Scan shop QR code at entrance
-2. **Shop**: Scan product barcodes to add to cart
-3. **Review**: Check cart and total amount
-4. **Pay**: Complete payment via Razorpay
-5. **Exit**: Show exit QR to guard for verification
-6. **Download Bill**: Get PDF receipt
+---
 
-### Guard Workflow
+## Current Status
 
-1. Open Guard App
-2. Scan customer's exit QR code
-3. Verify payment status
-4. Allow/flag customer exit
+| Component | Status |
+|-----------|--------|
+| Backend | ✅ Production ready, 62 tests passing |
+| Admin Dashboard | 🔧 Demo data — needs live backend connection |
+| Customer App | 🔧 Working on Expo Go — needs EAS Build |
+| Guard App | 🔧 Working on Expo Go — needs EAS Build |
+| SuperCart Website | ⬜ Not built yet |
+| Deployment | ⬜ Not deployed yet |
 
-### Admin Tasks
+---
 
-1. Add/edit products
-2. Monitor transactions
-3. View flagged users
-4. Manage store inventory
+## Built By
 
-## 🔧 Configuration
-
-### Network Setup
-
-For local development, ensure all devices are on the same WiFi network. Update API URLs in:
-- `customer-app/src/api.js`
-- `guard-app/src/api.js`
-- `admin-dashboard/src/api/client.ts`
-
-### Database Schema
-
-Key tables:
-- `users` - Customer information
-- `stores` - Store details
-- `products` - Product catalog
-- `sessions` - Shopping sessions
-- `cart_items` - Session cart items
-
-## 🐛 Troubleshooting
-
-### Camera Black Screen
-- Ensure camera permissions are granted
-- Clear Expo cache: `expo start -c`
-- Restart app completely
-
-### Network Errors
-- Verify backend is running on correct port
-- Check firewall settings
-- Ensure devices are on same network
-- For production, use tunneling service (ngrok, serveo)
-
-### Database Connection Issues
-- Verify PostgreSQL is running
-- Check `.env` credentials
-- Run `node src/sync.js` to recreate tables
-
-## 📝 API Endpoints
-
-### Cart
-- `POST /api/cart/start` - Start shopping session
-- `POST /api/cart/add` - Add item to cart
-
-### Payment
-- `POST /api/payment/create-order` - Create Razorpay order
-- `POST /api/payment/verify` - Verify payment
-
-### Verification
-- `POST /api/verification/verify-exit` - Verify exit token
-
-### Bills
-- `GET /api/bill/:sessionId` - Download PDF bill
-
-## 🔐 Security
-
-- JWT-based authentication
-- Razorpay signature verification
-- Exit token validation
-- Trust score system for fraud detection
-
-## 👥 Contributors
-
-- Ashutosh Sharma
-
-## 🙏 Acknowledgments
-
-- Razorpay for payment integration
-- Expo team for mobile development tools
-- PostgreSQL community
+**Ashutosh Sharma** — [github.com/AshutoshSharma-pixel](https://github.com/AshutoshSharma-pixel)
