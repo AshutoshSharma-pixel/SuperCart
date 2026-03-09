@@ -8,9 +8,6 @@ async function start() {
     await db.authenticate();
     console.log('Database connected...');
     
-    await db.sync({ alter: true });
-    console.log('Database synced...');
-    
     app.listen(PORT, () => {
       console.log(`Server started on port ${PORT}`);
     });
