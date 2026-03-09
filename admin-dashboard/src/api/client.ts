@@ -1,10 +1,20 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://192.168.5.185:5001/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://supercart-backend-77807676789.asia-south1.run.app/api',
+});
+
+// Attach JWT token to every request
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
 });
 
 export const getStore = (id: string) => api.get(`/stores/${id}`);
+
 // Mock stats for dashboard as we didn't implement stats API yet
 export const getStats = () => Promise.resolve({
     data: {
