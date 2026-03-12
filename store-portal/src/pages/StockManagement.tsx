@@ -26,6 +26,7 @@ export default function StockManagement() {
             // Fetch products for the store
             const prodRes = await api.get('/products/store')
             setProducts(prodRes.data || [])
+            console.log('Products loaded:', prodRes.data)
             
             // Fetch history for first product or selected product
             const productId = selectedProductId || (prodRes.data?.[0]?.id)
