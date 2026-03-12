@@ -59,22 +59,17 @@ export default function StockManagement() {
     // Auto-resolve product on barcode scan
     useEffect(() => {
         if (receiveBarcode && receiveBarcode.length > 5) {
-            // Look up product by barcode via API
-            const fetchProductByBarcode = async () => {
-                try {
-                    const res = await api.get(`/products?barcode=${receiveBarcode}`)
-                    const product = Array.isArray(res.data) ? res.data[0] : res.data
-                    setReceiveProduct(product)
-                } catch (err) {
-                    console.error('Product not found:', err)
-                    setReceiveProduct(null)
-                }
+            // Search locally in already-loaded products array
+            const product = products.find(p => p.barcode === receiveBarcode)
+            if (product) {
+                setReceiveProduct(product)
+            } else {
+                setReceiveProduct(null)
             }
-            fetchProductByBarcode()
         } else {
             setReceiveProduct(null)
         }
-    }, [receiveBarcode])
+    }, [receiveBarcode, products])
 
     const fetchHistory = async (productId: string) => {
         const validProductId = productId && !isNaN(Number(productId)) ? Number(productId) : null
