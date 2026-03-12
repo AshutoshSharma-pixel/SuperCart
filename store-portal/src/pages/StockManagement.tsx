@@ -6,6 +6,8 @@ import BarcodeScanner from '../components/BarcodeScanner'
 export default function StockManagement() {
     const [products, setProducts] = useState<Product[]>([])
     const [history, setHistory] = useState<StockLog[]>([])
+    const [loading, setLoading] = useState(true)
+    const [selectedProductId, setSelectedProductId] = useState('')
 
     // Receive Stock Form
     const [showScanner, setShowScanner] = useState(false)
@@ -19,40 +21,77 @@ export default function StockManagement() {
     const [adjustReason, setAdjustReason] = useState('')
 
     const fetchData = async () => {
+        setLoading(true)
         try {
-            const [prodRes, histRes] = await Promise.allSettled([
-                api.get('/products/store'),
-                api.get('/products/stock-history') // Requires new route or placeholder
-            ])
-
-            if (prodRes.status === 'fulfilled') setProducts(prodRes.value.data || [])
-            // Mocking history if endpoint 404s
-            if (histRes.status === 'fulfilled') setHistory(histRes.value.data || [])
-            else setHistory([])
+            // Fetch products for the store
+            const prodRes = await api.get('/api/products/store')
+            setProducts(prodRes.data || [])
+            
+            // Fetch history for first product or selected product
+            const productId = selectedProductId || (prodRes.data?.[0]?.id)
+            if (productId) {
+                try {
+                    const histRes = await api.get(`/api/products/${productId}/stock-history`)
+                    setHistory(histRes.data || [])
+                } catch (err) {
+                    setHistory([])
+                }
+            } else {
+                setHistory([])
+            }
         } catch (err) {
-            console.error(err)
+            console.error('Failed to fetch data:', err)
+            setProducts([])
+            setHistory([])
+        } finally {
+            setLoading(false)
         }
     }
 
     useEffect(() => { fetchData() }, [])
+    useEffect(() => { 
+        if (selectedProductId) {
+            fetchHistory(selectedProductId)
+        }
+    }, [selectedProductId])
 
     // Auto-resolve product on barcode scan
     useEffect(() => {
         if (receiveBarcode && receiveBarcode.length > 5) {
-            const p = products.find(prod => prod.barcode === receiveBarcode)
-            setReceiveProduct(p || null)
+            // Look up product by barcode via API
+            const fetchProductByBarcode = async () => {
+                try {
+                    const res = await api.get(`/api/products?barcode=${receiveBarcode}`)
+                    const product = res.data?.[0] || null
+                    setReceiveProduct(product)
+                } catch (err) {
+                    console.error('Product not found:', err)
+                    setReceiveProduct(null)
+                }
+            }
+            fetchProductByBarcode()
         } else {
             setReceiveProduct(null)
         }
-    }, [receiveBarcode, products])
+    }, [receiveBarcode])
+
+    const fetchHistory = async (productId: string) => {
+        try {
+            const histRes = await api.get(`/api/products/${productId}/stock-history`)
+            setHistory(histRes.data || [])
+        } catch (err) {
+            setHistory([])
+        }
+    }
 
     const handleReceiveStock = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!receiveProduct || !receiveQty) return alert('Select product and quantity')
         try {
-            await api.post(`/products/${receiveProduct.id}/receive`, { quantity: parseInt(receiveQty) })
+            await api.post(`/api/products/${receiveProduct.id}/receive`, { quantity: parseInt(receiveQty) })
             setReceiveBarcode('')
             setReceiveQty('')
+            setReceiveProduct(null)
             fetchData()
         } catch (err) {
             alert('Failed to receive stock')
@@ -63,7 +102,7 @@ export default function StockManagement() {
         e.preventDefault()
         if (!adjustProductId || !adjustQty || !adjustReason) return alert('Fill all fields')
         try {
-            await api.patch(`/products/${adjustProductId}/adjust-stock`, {
+            await api.patch(`/api/products/${adjustProductId}/adjust-stock`, {
                 adjustment: parseInt(adjustQty),
                 reason: adjustReason
             })
@@ -150,9 +189,21 @@ export default function StockManagement() {
 
             {/* Stock History */}
             <div style={{ background: 'var(--surf)', border: '1px solid var(--bdr)', borderRadius: 12, padding: '24px 0' }}>
-                <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18, marginBottom: 20, padding: '0 24px' }}>Movement History</h3>
-                {history.length === 0 ? (
-                    <div style={{ padding: 40, textAlign: 'center', color: 'var(--mut)' }}>No history logged yet.</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px', marginBottom: 20 }}>
+                    <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18 }}>Movement History</h3>
+                    <select 
+                        style={{ ...inputStyle, width: 200, padding: '8px 12px' }} 
+                        value={selectedProductId} 
+                        onChange={e => setSelectedProductId(e.target.value)}
+                    >
+                        <option value="">All Products</option>
+                        {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    </select>
+                </div>
+                {loading ? (
+                    <div style={{ padding: 40, textAlign: 'center', color: 'var(--mut)' }}>Loading...</div>
+                ) : history.length === 0 ? (
+                    <div style={{ padding: 40, textAlign: 'center', color: 'var(--mut)' }}>No stock history yet</div>
                 ) : (
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
