@@ -24,7 +24,7 @@ export default function StockManagement() {
         setLoading(true)
         try {
             // Fetch products for the store
-            const prodRes = await api.get('/api/products/store')
+            const prodRes = await api.get('/products/store')
             setProducts(prodRes.data || [])
             
             // Fetch history for first product or selected product
@@ -32,7 +32,7 @@ export default function StockManagement() {
             const validProductId = productId && !isNaN(Number(productId)) ? Number(productId) : null
             if (validProductId) {
                 try {
-                    const histRes = await api.get(`/api/products/${validProductId}/stock-history`)
+                    const histRes = await api.get(`/products/${validProductId}/stock-history`)
                     setHistory(histRes.data || [])
                 } catch (err) {
                     setHistory([])
@@ -62,7 +62,7 @@ export default function StockManagement() {
             // Look up product by barcode via API
             const fetchProductByBarcode = async () => {
                 try {
-                    const res = await api.get(`/api/products?barcode=${receiveBarcode}`)
+                    const res = await api.get(`/products?barcode=${receiveBarcode}`)
                     const product = Array.isArray(res.data) ? res.data[0] : res.data
                     setReceiveProduct(product)
                 } catch (err) {
@@ -94,7 +94,7 @@ export default function StockManagement() {
         e.preventDefault()
         if (!receiveProduct || !receiveQty) return alert('Select product and quantity')
         try {
-            await api.post(`/api/products/${receiveProduct.id}/receive`, { quantity: parseInt(receiveQty) })
+            await api.post(`/products/${receiveProduct.id}/receive`, { quantity: parseInt(receiveQty) })
             setReceiveBarcode('')
             setReceiveQty('')
             setReceiveProduct(null)
@@ -108,7 +108,7 @@ export default function StockManagement() {
         e.preventDefault()
         if (!adjustProductId || !adjustQty || !adjustReason) return alert('Fill all fields')
         try {
-            await api.patch(`/api/products/${adjustProductId}/adjust-stock`, {
+            await api.patch(`/products/${adjustProductId}/adjust-stock`, {
                 adjustment: parseInt(adjustQty),
                 reason: adjustReason
             })
