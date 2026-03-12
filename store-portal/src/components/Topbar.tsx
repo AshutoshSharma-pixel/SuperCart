@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth'
 
 export default function Topbar() {
     const { pathname } = useLocation()
-    const { store } = useAuth()
+    const { store: authStore } = useAuth()
 
     const titles: Record<string, string> = {
         '/dashboard': 'Dashboard Overview',
@@ -14,11 +14,13 @@ export default function Topbar() {
         '/subscription': 'Subscription Plan'
     }
 
+    const store = JSON.parse(localStorage.getItem('store_info') || '{}')
+    const planTier = store.planTier || null
+    const expiry = store.planExpiresAt ? new Date(store.planExpiresAt) : null
+    const daysLeft = expiry ? Math.ceil((expiry.getTime() - Date.now()) / 86400000) : 0
+
     const title = titles[pathname] || 'Store Portal'
     const dateStr = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-
-    const daysLeft = store?.subscriptionExpiry ? Math.max(0, Math.ceil((new Date(store.subscriptionExpiry).getTime() - Date.now()) / 86400000)) : 0
-    const planLabel = store?.subscriptionPlan ? store.subscriptionPlan.charAt(0).toUpperCase() + store.subscriptionPlan.slice(1) : 'No Plan'
 
     return (
         <div style={{ height: 60, background: 'var(--surf)', borderBottom: '1px solid var(--bdr)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px' }}>
@@ -28,24 +30,42 @@ export default function Topbar() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{
-                    padding: '6px 12px',
-                    border: '1px solid var(--gold)',
-                    borderRadius: 100,
-                    background: 'var(--gold-bg)',
-                    color: 'var(--ink)',
-                    fontFamily: 'JetBrains Mono',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6
-                }}>
-                    <span style={{ color: 'var(--gold)' }}>⚡</span> {planLabel} Plan · {daysLeft}d left
-                </div>
+                {planTier ? (
+                    <div style={{
+                        padding: '6px 12px',
+                        border: '1px solid var(--gold)',
+                        borderRadius: 100,
+                        background: 'var(--gold-bg)',
+                        color: 'var(--ink)',
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6
+                    }}>
+                        <span style={{ color: 'var(--gold)' }}>⚡</span> {planTier} Plan · {daysLeft}d left
+                    </div>
+                ) : (
+                    <div style={{
+                        padding: '6px 12px',
+                        border: '1px solid var(--amber)',
+                        borderRadius: 100,
+                        background: 'var(--amber-bg)',
+                        color: 'var(--ink)',
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6
+                    }}>
+                        <span style={{ color: 'var(--amber)' }}>⚠️</span> No Active Plan
+                    </div>
+                )}
 
                 <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, var(--gold), #8A6E2F)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink)', fontWeight: 700, fontSize: 13 }}>
-                    {store?.name?.charAt(0).toUpperCase() || 'S'}
+                    {authStore?.name?.charAt(0).toUpperCase() || 'S'}
                 </div>
             </div>
         </div>
