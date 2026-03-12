@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #F5F6FA;
+  --surf: #FFFFFF;
+  --bdr: #E8EAF0;
+  --bdr2: #D4D7E3;
+  --ink: #0D0F1A;
+  --ink2: #3D4260;
+  --mut: #8890AA;
+  --accent: #1A1F3A;
+  --accent2: #2D3560;
+  --gold: #C8A84B;
+  --gold-bg: rgba(200, 168, 75, 0.08);
+  --gold-bdr: rgba(200, 168, 75, 0.25);
+  --grn: #16A34A;
+  --grn-bg: rgba(22, 163, 74, 0.08);
+  --grn-bdr: rgba(22, 163, 74, 0.20);
+  --red: #DC2626;
+  --red-bg: rgba(220, 38, 38, 0.07);
+  --red-bdr: rgba(220, 38, 38, 0.18);
+  --amb: #D97706;
+  --amb-bg: rgba(217, 119, 6, 0.08);
+  --amb-bdr: rgba(217, 119, 6, 0.20);
+  --blu: #2563EB;
+  --blu-bg: rgba(37, 99, 235, 0.07);
+  --blu-bdr: rgba(37, 99, 235, 0.18);
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100%;
+}
