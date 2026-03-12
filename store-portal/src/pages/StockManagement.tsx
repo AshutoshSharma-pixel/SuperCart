@@ -83,7 +83,7 @@ export default function StockManagement() {
             return
         }
         try {
-            const histRes = await api.get(`/api/products/${validProductId}/stock-history`)
+            const histRes = await api.get(`/products/${validProductId}/stock-history`)
             setHistory(histRes.data || [])
         } catch (err) {
             setHistory([])
