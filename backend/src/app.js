@@ -17,16 +17,17 @@ const corsOptions = {
     origin: function (origin, callback) {
         const allowedOrigins = process.env.ALLOWED_ORIGINS
             ? process.env.ALLOWED_ORIGINS.split(',')
-            : ['http://localhost:5173', 'http://localhost:3000'];
-
-        if (!origin || allowedOrigins.includes(origin)) {
+            : [];
+        
+        // Always allow localhost for development
+        if (!origin || 
+            allowedOrigins.includes(origin) || 
+            origin.startsWith('http://localhost')) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 };
 
