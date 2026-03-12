@@ -29,9 +29,10 @@ export default function StockManagement() {
             
             // Fetch history for first product or selected product
             const productId = selectedProductId || (prodRes.data?.[0]?.id)
-            if (productId && !isNaN(Number(productId))) {
+            const validProductId = productId && !isNaN(Number(productId)) ? Number(productId) : null
+            if (validProductId) {
                 try {
-                    const histRes = await api.get(`/api/products/${productId}/stock-history`)
+                    const histRes = await api.get(`/api/products/${validProductId}/stock-history`)
                     setHistory(histRes.data || [])
                 } catch (err) {
                     setHistory([])
@@ -76,12 +77,13 @@ export default function StockManagement() {
     }, [receiveBarcode])
 
     const fetchHistory = async (productId: string) => {
-        if (!productId || isNaN(Number(productId))) {
+        const validProductId = productId && !isNaN(Number(productId)) ? Number(productId) : null
+        if (!validProductId) {
             setHistory([])
             return
         }
         try {
-            const histRes = await api.get(`/api/products/${productId}/stock-history`)
+            const histRes = await api.get(`/api/products/${validProductId}/stock-history`)
             setHistory(histRes.data || [])
         } catch (err) {
             setHistory([])
