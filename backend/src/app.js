@@ -19,10 +19,10 @@ const corsOptions = {
             ? process.env.ALLOWED_ORIGINS.split(',')
             : [];
         
-        // Always allow localhost for development
         if (!origin || 
             allowedOrigins.includes(origin) || 
-            origin.startsWith('http://localhost')) {
+            origin.startsWith('http://localhost') ||
+            origin.endsWith('.vercel.app')) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
