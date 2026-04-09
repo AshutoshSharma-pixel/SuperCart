@@ -34,7 +34,7 @@ export default function StockManagement() {
             if (validProductId) {
                 try {
                     const histRes = await api.get(`/products/${validProductId}/stock-history`)
-                    setHistory(histRes.data || [])
+                    setHistory(Array.isArray(histRes.data) ? histRes.data : [])
                 } catch (err) {
                     setHistory([])
                 }
@@ -80,7 +80,7 @@ export default function StockManagement() {
         }
         try {
             const histRes = await api.get(`/products/${validProductId}/stock-history`)
-            setHistory(histRes.data || [])
+            setHistory(Array.isArray(histRes.data) ? histRes.data : [])
         } catch (err) {
             setHistory([])
         }
@@ -105,8 +105,8 @@ export default function StockManagement() {
         if (!adjustProductId || !adjustQty || !adjustReason) return alert('Fill all fields')
         try {
             await api.patch(`/products/${adjustProductId}/adjust-stock`, {
-                adjustment: parseInt(adjustQty),
-                reason: adjustReason
+                quantity: parseInt(adjustQty),
+                note: adjustReason
             })
             setAdjustQty('')
             setAdjustReason('')
@@ -168,7 +168,7 @@ export default function StockManagement() {
                             <label style={labelStyle}>Select Product</label>
                             <select style={inputStyle} value={adjustProductId} onChange={e => setAdjustProductId(e.target.value)} required>
                                 <option value="" disabled>Select a product...</option>
-                                {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.quantity} in stock)</option>)}
+                                {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.stock} in stock)</option>)}
                             </select>
                         </div>
 
