@@ -8,7 +8,7 @@ export default function Discounts() {
 
     // Set Discount Form
     const [productId, setProductId] = useState('')
-    const [type, setType] = useState<'percentage' | 'flat'>('percentage')
+    const [type, setType] = useState<'PERCENTAGE' | 'FLAT'>('PERCENTAGE')
     const [value, setValue] = useState('')
     const [expiry, setExpiry] = useState('')
 
@@ -28,12 +28,14 @@ export default function Discounts() {
         if (!productId || !value) return alert('Select product and value')
 
         try {
-            await api.put(`/products/${productId}`, {
+            const payload: any = {
                 discountType: type,
                 discountValue: parseFloat(value),
-                discountExpiry: expiry || null,
-                discountActive: true
-            })
+                isDiscountActive: true
+            }
+            if (expiry) payload.discountExpiresAt = new Date(expiry).toISOString()
+
+            await api.put(`/products/${productId}`, payload)
             setProductId('')
             setValue('')
             setExpiry('')
@@ -43,17 +45,16 @@ export default function Discounts() {
         }
     }
 
-    const toggleDiscount = async (id: number, current: boolean) => {
+    const toggleDiscount = async (id: number) => {
         try {
-            // Assuming a dedicated toggle exists or using PUT
-            await api.patch(`/products/${id}/toggle-discount`, { discountActive: !current })
+            await api.patch(`/products/${id}/toggle-discount`)
             fetchProducts()
         } catch (err) {
             console.error('Failed to toggle')
         }
     }
 
-    const activeProducts = products.filter(p => p.discountActive && p.discountValue)
+    const activeProducts = products.filter(p => p.isDiscountActive && p.discountValue)
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -74,14 +75,14 @@ export default function Discounts() {
                     <div style={{ flex: 1 }}>
                         <label style={labelStyle}>Discount Type</label>
                         <select style={inputStyle} value={type} onChange={e => setType(e.target.value as any)}>
-                            <option value="percentage">Percentage (%)</option>
-                            <option value="flat">Flat Amount (₹)</option>
+                            <option value="PERCENTAGE">Percentage (%)</option>
+                            <option value="FLAT">Flat Amount (₹)</option>
                         </select>
                     </div>
 
                     <div style={{ flex: 1 }}>
                         <label style={labelStyle}>Value</label>
-                        <input style={inputStyle} type="number" step="0.01" value={value} onChange={e => setValue(e.target.value)} placeholder={type === 'percentage' ? "10" : "50.00"} required />
+                        <input style={inputStyle} type="number" step="0.01" value={value} onChange={e => setValue(e.target.value)} placeholder={type === 'PERCENTAGE' ? "10" : "50.00"} required />
                     </div>
 
                     <div style={{ flex: 1.5 }}>
@@ -118,16 +119,16 @@ export default function Discounts() {
                                 <tr key={p.id}>
                                     <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)', fontWeight: 600 }}>{p.name}<div style={{ fontFamily: 'JetBrains Mono', fontSize: 11, color: 'var(--mut)', fontWeight: 400, marginTop: 4 }}>{p.barcode}</div></td>
                                     <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)', textAlign: 'center' }}>
-                                        <Badge type={p.discountType === 'percentage' ? 'warning' : 'info'}>{p.discountType?.toUpperCase()}</Badge>
+                                        <Badge type={p.discountType === 'PERCENTAGE' ? 'warning' : 'info'}>{p.discountType}</Badge>
                                     </td>
                                     <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)', textAlign: 'right', fontFamily: 'Syne', fontWeight: 700, fontSize: 16 }}>
-                                        {p.discountType === 'percentage' ? `${p.discountValue}% OFF` : `₹${p.discountValue}`}
+                                        {p.discountType === 'PERCENTAGE' ? `${p.discountValue}% OFF` : `₹${p.discountValue}`}
                                     </td>
                                     <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)', color: 'var(--mut)', fontSize: 13 }}>
-                                        {p.discountExpiry ? new Date(p.discountExpiry).toLocaleDateString() : 'Never'}
+                                        {p.discountExpiresAt ? new Date(p.discountExpiresAt).toLocaleDateString() : 'Never'}
                                     </td>
                                     <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)', textAlign: 'center' }}>
-                                        <button onClick={() => toggleDiscount(p.id, p.discountActive)} style={{ background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid var(--red-bdr)', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>REVOKE</button>
+                                        <button onClick={() => toggleDiscount(p.id)} style={{ background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid var(--red-bdr)', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>REVOKE</button>
                                     </td>
                                 </tr>
                             ))}
