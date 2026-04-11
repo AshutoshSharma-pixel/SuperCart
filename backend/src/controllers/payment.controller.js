@@ -133,9 +133,9 @@ exports.getStoreTransactions = async (req, res, next) => {
             },
             include: [{
                 model: CartItem,
-                attributes: []
+                attributes: ['id']
             }],
-            group: ['Session.id'],
+            group: ['session.id'],
             attributes: {
                 include: [
                     [Sequelize.fn('COUNT', Sequelize.col('cart_items.id')), 'itemCount']
