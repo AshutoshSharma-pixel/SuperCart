@@ -127,7 +127,7 @@ exports.getStoreTransactions = async (req, res, next) => {
 
         // Fetch sessions with their cart item count
         const transactions = await Session.findAll({
-            where: { 
+            where: {
                 storeId,
                 status: ['PAID', 'USED', 'FLAGGED']
             },
@@ -135,12 +135,11 @@ exports.getStoreTransactions = async (req, res, next) => {
                 model: CartItem,
                 attributes: []
             }],
-            group: ['session.id'],
+            group: ['Session.id'],
             attributes: {
                 include: [
                     [Sequelize.fn('COUNT', Sequelize.col('cart_items.id')), 'itemCount']
-                ],
-                exclude: []
+                ]
             },
             order: [['createdAt', 'DESC']]
         });
