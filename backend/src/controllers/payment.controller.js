@@ -2,6 +2,7 @@ const { Session, Product, CartItem } = require('../models');
 const jwt = require('jsonwebtoken');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const { Sequelize } = require('sequelize');
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
@@ -116,6 +117,50 @@ exports.verifyPayment = async (req, res, next) => {
 
     } catch (error) {
         console.error('Verify Error:', error);
+        next(error);
+    }
+};
+
+exports.getStoreTransactions = async (req, res, next) => {
+    try {
+        const storeId = req.storeId;
+
+        // Fetch sessions with their cart item count
+        const transactions = await Session.findAll({
+            where: { 
+                storeId,
+                status: ['PAID', 'USED', 'FLAGGED']
+            },
+            include: [{
+                model: CartItem,
+                attributes: []
+            }],
+            group: ['session.id'],
+            attributes: {
+                include: [
+                    [Sequelize.fn('COUNT', Sequelize.col('cart_items.id')), 'itemCount']
+                ],
+                exclude: []
+            },
+            order: [['createdAt', 'DESC']]
+        });
+
+        // Clean up status mapping for frontend expectations
+        const result = transactions.map(t => {
+            const data = t.toJSON();
+            return {
+                id: data.id,
+                sessionId: String(data.id),
+                amount: data.totalAmount,
+                status: data.status.toLowerCase(), // frontend expects 'paid' etc
+                itemCount: parseInt(data.itemCount || 0),
+                createdAt: data.createdAt
+            };
+        });
+
+        res.json(result);
+    } catch (error) {
+        console.error('Get Store Transactions Error:', error);
         next(error);
     }
 };
