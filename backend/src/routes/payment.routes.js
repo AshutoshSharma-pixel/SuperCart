@@ -7,4 +7,7 @@ const { validateCreateOrder, validateVerifyPayment } = require('../middleware/va
 router.post('/create-order', validateCreateOrder, paymentController.createOrder);
 router.post('/verify', validateVerifyPayment, paymentController.verifyPayment);
 
+const { storeAuth } = require('../middleware/auth');
+router.get('/transactions', storeAuth, paymentController.getStoreTransactions);
+
 module.exports = router;
