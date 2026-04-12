@@ -61,7 +61,7 @@ export default function StockManagement() {
     useEffect(() => {
         if (receiveBarcode && receiveBarcode.length > 5) {
             // Search locally in already-loaded products array
-            const product = products.find(p => p.barcode === receiveBarcode)
+            const product = products.find(p => p.barcode === receiveBarcode.trim())
             if (product) {
                 setReceiveProduct(product)
             } else {
@@ -168,7 +168,7 @@ export default function StockManagement() {
                             <label style={labelStyle}>Select Product</label>
                             <select style={inputStyle} value={adjustProductId} onChange={e => setAdjustProductId(e.target.value)} required>
                                 <option value="" disabled>Select a product...</option>
-                                {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.quantity} in stock)</option>)}
+                                {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.stock} in stock)</option>)}
                             </select>
                         </div>
 

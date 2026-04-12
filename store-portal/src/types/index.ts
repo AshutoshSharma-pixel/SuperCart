@@ -14,7 +14,8 @@ export interface Product {
     barcode: string
     name: string
     price: string
-    quantity: number
+    stock: number
+    quantity?: number
     lowStockThreshold: number
     isOutOfStock: boolean
     discountType: 'PERCENTAGE' | 'FLAT' | null
