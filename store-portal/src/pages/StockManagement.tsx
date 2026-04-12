@@ -34,7 +34,8 @@ export default function StockManagement() {
             if (validProductId) {
                 try {
                     const histRes = await api.get(`/products/${validProductId}/stock-history`)
-                    setHistory(Array.isArray(histRes.data) ? histRes.data : [])
+                    const logs = histRes.data?.history || histRes.data
+                    setHistory(Array.isArray(logs) ? logs : [])
                 } catch (err) {
                     setHistory([])
                 }
@@ -80,7 +81,8 @@ export default function StockManagement() {
         }
         try {
             const histRes = await api.get(`/products/${validProductId}/stock-history`)
-            setHistory(Array.isArray(histRes.data) ? histRes.data : [])
+            const logs = histRes.data?.history || histRes.data
+            setHistory(Array.isArray(logs) ? logs : [])
         } catch (err) {
             setHistory([])
         }
@@ -219,16 +221,17 @@ export default function StockManagement() {
                         <tbody>
                             {history.map(h => {
                                 const isPos = h.quantity > 0
+                                const activeProduct = products.find(p => p.id === Number(selectedProductId || products[0]?.id))
                                 return (
                                     <tr key={h.id}>
                                         <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)' }}>
                                             <span style={{
                                                 padding: '4px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono', textTransform: 'uppercase',
-                                                background: h.type === 'received' ? 'var(--grn-bg)' : h.type === 'sold' ? 'var(--red-bg)' : 'var(--amb-bg)',
-                                                color: h.type === 'received' ? 'var(--grn)' : h.type === 'sold' ? 'var(--red)' : 'var(--amb)'
+                                                background: (h as any).type === 'RECEIVED' ? 'var(--grn-bg)' : (h as any).type === 'SOLD' ? 'var(--red-bg)' : 'var(--amb-bg)',
+                                                color: (h as any).type === 'RECEIVED' ? 'var(--grn)' : (h as any).type === 'SOLD' ? 'var(--red)' : 'var(--amb)'
                                             }}>{h.type}</span>
                                         </td>
-                                        <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)', fontWeight: 600 }}>{h.productName} <div style={{ fontSize: 12, color: 'var(--mut)', fontWeight: 400, marginTop: 4 }}>{h.reason || (h.type === 'sold' ? 'Customer Purchase' : 'Inventory Received')}</div></td>
+                                        <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)', fontWeight: 600 }}>{activeProduct?.name || 'Product'} <div style={{ fontSize: 12, color: 'var(--mut)', fontWeight: 400, marginTop: 4 }}>{(h as any).note || ((h as any).type === 'SOLD' ? 'Customer Purchase' : 'Inventory Received')}</div></td>
                                         <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)' }}>{new Date(h.createdAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                                         <td style={{ padding: '16px 24px', borderBottom: '1px solid var(--bdr2)', textAlign: 'right', fontFamily: 'JetBrains Mono', fontWeight: 700, fontSize: 14, color: isPos ? 'var(--grn)' : 'var(--red)' }}>
                                             {isPos ? '+' : ''}{h.quantity}
