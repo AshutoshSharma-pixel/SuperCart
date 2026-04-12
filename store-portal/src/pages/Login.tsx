@@ -43,8 +43,8 @@ export default function Login() {
         }
     }
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleRegister = async (e?: any) => {
+        if (e && e.preventDefault) e.preventDefault()
         setError('')
         setLoading(true)
         try {
@@ -137,7 +137,7 @@ export default function Login() {
                                 <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 28, marginBottom: 8, color: 'var(--ink)' }}>New Store Registration</h2>
                                 <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 28 }}>Join the SuperCart network and modernize your shop.</p>
 
-                                <form onSubmit={handleRegister}>
+                                 <div onKeyDown={e => e.key === 'Enter' && handleRegister()}>
                                     <div style={{ marginBottom: 16 }}>
                                         <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6 }}>Store Name</label>
                                         <input
@@ -230,7 +230,7 @@ export default function Login() {
 
                                     {error && <div style={{ background: 'var(--red-bg)', border: '1px solid var(--red-bdr)', color: 'var(--red)', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 16 }}>{error}</div>}
 
-                                    <button type="submit" disabled={loading} style={{ width: '100%', padding: 14, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'opacity 0.2s', opacity: loading ? 0.7 : 1 }}>
+                                    <button type="button" onClick={() => handleRegister()} disabled={loading} style={{ width: '100%', padding: 14, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'opacity 0.2s', opacity: loading ? 0.7 : 1 }}>
                                         {loading ? 'Creating Account...' : 'Register Store'}
                                     </button>
 
@@ -241,7 +241,8 @@ export default function Login() {
                                     >
                                         Already have an account? Sign In
                                     </button>
-                                </form>
+                                </div>
+
                             </>
                         )}
                     </div>
