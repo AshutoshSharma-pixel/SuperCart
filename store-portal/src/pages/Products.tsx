@@ -124,8 +124,8 @@ export default function Products() {
                     <div key={p.id} style={{ background: 'var(--surf)', border: '1px solid var(--bdr)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                             <div style={{ fontFamily: 'JetBrains Mono', fontSize: 11, color: 'var(--mut)' }}>{p.barcode}</div>
-                            <Badge type={p.quantity === 0 ? 'error' : p.quantity <= p.lowStockThreshold ? 'warning' : 'success'}>
-                                {p.quantity === 0 ? 'OUT OF STOCK' : p.quantity <= p.lowStockThreshold ? 'LOW STOCK' : 'IN STOCK'}
+                            <Badge type={p.stock === 0 ? 'error' : p.stock <= p.lowStockThreshold ? 'warning' : 'success'}>
+                                {p.stock === 0 ? 'OUT OF STOCK' : p.stock <= p.lowStockThreshold ? 'LOW STOCK' : 'IN STOCK'}
                             </Badge>
                         </div>
                         <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, color: 'var(--ink)' }}>{p.name}</div>
@@ -137,7 +137,7 @@ export default function Products() {
                         </div>
 
                         <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: '1px solid var(--bdr2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ fontSize: 13, color: 'var(--ink2)' }}><strong style={{ color: 'var(--ink)' }}>{p.quantity}</strong> in stock</div>
+                            <div style={{ fontSize: 13, color: 'var(--ink2)' }}><strong style={{ color: 'var(--ink)' }}>{p.stock}</strong> in stock</div>
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <button style={{ background: 'none', border: 'none', color: 'var(--blu)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Edit</button>
                                 <button onClick={() => handleDelete(p.id)} style={{ background: 'none', border: 'none', color: 'var(--red)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
