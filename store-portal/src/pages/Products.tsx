@@ -131,8 +131,8 @@ export default function Products() {
                         <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, color: 'var(--ink)' }}>{p.name}</div>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 20 }}>
                             <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 22, color: 'var(--ink)' }}>₹{p.price}</div>
-                            {p.discountActive && p.discountValue && (
-                                <Badge type="info">{p.discountType === 'percentage' ? `${p.discountValue}% OFF` : `₹${p.discountValue} OFF`}</Badge>
+                            {p.isDiscountActive && p.discountValue && (
+                                <Badge type="info">{p.discountType === 'PERCENTAGE' ? `${p.discountValue}% OFF` : `₹${p.discountValue} OFF`}</Badge>
                             )}
                         </div>
 
