@@ -52,3 +52,43 @@ exports.getFlags = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getStores = async (req, res, next) => {
+    try {
+        const stores = await Store.findAll({
+            attributes: [
+                'id', 'name', 'shopId', 'planTier', 'planExpiresAt', 
+                'gracePeriodEndsAt', 'isLocked', 'ownerName', 'ownerPhone', 
+                'ownerEmail', 'shopAddress', 'location', 'createdAt'
+            ],
+            order: [['createdAt', 'DESC']]
+        });
+        res.json(stores);
+    } catch (error) {
+        console.error('Get Stores Error:', error);
+        next(error);
+    }
+};
+
+exports.getStoreDetail = async (req, res, next) => {
+    try {
+        const { shopId } = req.params;
+        const store = await Store.findOne({
+            where: { shopId },
+            attributes: [
+                'id', 'name', 'shopId', 'planTier', 'planExpiresAt', 
+                'gracePeriodEndsAt', 'isLocked', 'ownerName', 'ownerPhone', 
+                'ownerEmail', 'shopAddress', 'location', 'createdAt'
+            ]
+        });
+
+        if (!store) {
+            return res.status(404).json({ error: 'Store not found' });
+        }
+
+        res.json(store);
+    } catch (error) {
+        console.error('Store Detail Error:', error);
+        next(error);
+    }
+};

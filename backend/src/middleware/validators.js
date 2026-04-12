@@ -52,6 +52,10 @@ const validateStoreRegister = [
         .withMessage('Password must be at least 8 characters')
         .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
         .withMessage('Password must contain uppercase, lowercase, and a number'),
+    body('ownerName').optional().trim().isLength({ max: 100 }),
+    body('ownerPhone').optional().trim().matches(/^[6-9]\d{9}$/).withMessage('Invalid phone number'),
+    body('ownerEmail').optional().trim().isEmail().withMessage('Invalid email'),
+    body('shopAddress').optional().trim().isLength({ max: 500 }),
     validate
 ];
 

@@ -48,6 +48,22 @@ const Store = db.define('store', {
     isLocked: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
+    },
+    ownerName: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    ownerPhone: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    ownerEmail: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    shopAddress: {
+        type: Sequelize.STRING,
+        allowNull: true
     }
 });
 

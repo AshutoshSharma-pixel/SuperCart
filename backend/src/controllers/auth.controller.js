@@ -78,7 +78,10 @@ exports.storeLogin = async (req, res, next) => {
 
 exports.storeRegister = async (req, res, next) => {
     try {
-        const { name, location, password } = req.body;
+        const {
+            name, location, password,
+            ownerName, ownerPhone, ownerEmail, shopAddress
+        } = req.body;
         const bcrypt = require('bcrypt');
 
         if (!name || !password) {
@@ -108,6 +111,10 @@ exports.storeRegister = async (req, res, next) => {
             location,
             shopId,
             passwordHash,
+            ownerName,
+            ownerPhone,
+            ownerEmail,
+            shopAddress,
             isLocked: true // inactive until plan is purchased
         });
 
