@@ -127,34 +127,36 @@ exports.getStoreTransactions = async (req, res, next) => {
 
         // Fetch sessions with their cart item count
         const transactions = await Session.findAll({
-            where: {
-                storeId,
-                status: ['PAID', 'USED', 'FLAGGED']
-            },
-            include: [{
-                model: CartItem,
-                attributes: ['id']
-            }],
-            group: ['session.id'],
-            attributes: {
-                include: [
-                    [Sequelize.fn('COUNT', Sequelize.col('cart_items.id')), 'itemCount']
-                ]
-            },
-            order: [['createdAt', 'DESC']]
+          where: {
+            storeId,
+            status: ['PAID', 'USED', 'FLAGGED']
+          },
+          attributes: [
+            'id',
+            'status',
+            'totalAmount',
+            'createdAt',
+            [
+              Sequelize.literal(`(
+                SELECT COUNT(*) FROM cart_items
+                WHERE cart_items."sessionId" = session.id
+              )`),
+              'itemCount'
+            ]
+          ],
+          order: [['createdAt', 'DESC']]
         });
 
-        // Clean up status mapping for frontend expectations
         const result = transactions.map(t => {
-            const data = t.toJSON();
-            return {
-                id: data.id,
-                sessionId: String(data.id),
-                amount: data.totalAmount,
-                status: data.status.toLowerCase(), // frontend expects 'paid' etc
-                itemCount: parseInt(data.itemCount || 0),
-                createdAt: data.createdAt
-            };
+          const data = t.toJSON();
+          return {
+            id: data.id,
+            sessionId: String(data.id),
+            amount: data.totalAmount,
+            status: data.status.toLowerCase(),
+            itemCount: parseInt(data.itemCount || 0),
+            createdAt: data.createdAt
+          };
         });
 
         res.json(result);
