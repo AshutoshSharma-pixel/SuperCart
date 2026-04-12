@@ -11,6 +11,18 @@ export default function Login() {
     const [forgotMode, setForgotMode] = useState(false)
     const [forgotEmail, setForgotEmail] = useState('')
     const [forgotSent, setForgotSent] = useState(false)
+
+    // Registration states
+    const [regMode, setRegMode] = useState(false)
+    const [regName, setRegName] = useState('')
+    const [regLocation, setRegLocation] = useState('')
+    const [regPassword, setRegPassword] = useState('')
+    const [ownerName, setOwnerName] = useState('')
+    const [ownerPhone, setOwnerPhone] = useState('')
+    const [ownerEmail, setOwnerEmail] = useState('')
+    const [shopAddress, setShopAddress] = useState('')
+    const [registeredShopId, setRegisteredShopId] = useState('')
+
     const { login } = useAuth()
     const navigate = useNavigate()
 
@@ -30,6 +42,29 @@ export default function Login() {
             setLoading(false)
         }
     }
+
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setError('')
+        setLoading(true)
+        try {
+            const { data } = await api.post('/auth/store-register', {
+                name: regName,
+                location: regLocation,
+                password: regPassword,
+                ownerName,
+                ownerPhone,
+                ownerEmail,
+                shopAddress
+            })
+            setRegisteredShopId(data.shopId)
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Registration failed. Please fill all required fields correctly.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -118,9 +153,154 @@ export default function Login() {
                             <button type="submit" disabled={loading} style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'opacity 0.2s', opacity: loading ? 0.7 : 1 }}>
                                 {loading ? 'Authenticating...' : 'Sign In to Portal'}
                             </button>
+
+                            <div style={{ textAlign: 'center', marginTop: 32 }}>
+                                <p style={{ fontSize: 13, color: 'var(--mut)', marginBottom: 12 }}>New to SuperCart?</p>
+                                <button
+                                    type="button"
+                                    onClick={() => { setRegMode(true); setError(''); }}
+                                    style={{ width: '100%', padding: '12px', background: 'transparent', color: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                                >
+                                    Create a Store Account
+                                </button>
+                            </div>
                         </form>
                     </div>
+                ) : regMode ? (
+                    <div style={{ width: '100%', maxWidth: 360, margin: '0 auto', paddingBottom: 40 }}>
+                        {registeredShopId ? (
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: 48, marginBottom: 20 }}>🎉</div>
+                                <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 26, marginBottom: 12, color: 'var(--ink)' }}>Registration Success!</h2>
+                                <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 32 }}>Your store has been created. Use the Shop ID below to sign in:</p>
+
+                                <div style={{ background: 'var(--bg)', border: '1px dashed var(--gold)', borderRadius: 12, padding: '24px 16px', marginBottom: 32 }}>
+                                    <div style={{ fontSize: 11, color: 'var(--mut)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8, fontFamily: 'JetBrains Mono' }}>Your Unique Shop ID</div>
+                                    <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--gold)', fontFamily: 'JetBrains Mono', letterSpacing: '0.05em' }}>{registeredShopId}</div>
+                                </div>
+
+                                <button
+                                    onClick={() => { setRegMode(false); setRegisteredShopId(''); setShopId(registeredShopId); }}
+                                    style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+                                >
+                                    Proceed to Sign In
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 28, marginBottom: 8, color: 'var(--ink)' }}>New Store Registration</h2>
+                                <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 28 }}>Join the SuperCart network and modernize your shop.</p>
+
+                                <form onSubmit={handleRegister}>
+                                    <div style={{ marginBottom: 16 }}>
+                                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6 }}>Store Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Example: Metro Mart"
+                                            value={regName}
+                                            onChange={e => setRegName(e.target.value)}
+                                            required
+                                            style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 14, outline: 'none' }}
+                                        />
+                                    </div>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6 }}>Location (City)</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Mumbai"
+                                                value={regLocation}
+                                                onChange={e => setRegLocation(e.target.value)}
+                                                required
+                                                style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 14, outline: 'none' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6 }}>Set Password</label>
+                                            <input
+                                                type="password"
+                                                placeholder="Min 8 chars"
+                                                value={regPassword}
+                                                onChange={e => setRegPassword(e.target.value)}
+                                                required
+                                                style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 14, outline: 'none' }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div style={{ borderTop: '1px solid var(--bdr)', margin: '20px 0', paddingTop: 20 }}>
+                                        <h3 style={{ fontSize: 11, color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16, fontFamily: 'JetBrains Mono' }}>Ownership Details</h3>
+
+                                        <div style={{ marginBottom: 16 }}>
+                                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6 }}>Owner Full Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Full Name"
+                                                value={ownerName}
+                                                onChange={e => setOwnerName(e.target.value)}
+                                                required
+                                                style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 14, outline: 'none' }}
+                                            />
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6 }}>Phone Number</label>
+                                                <input
+                                                    type="tel"
+                                                    placeholder="10-digit mobile"
+                                                    value={ownerPhone}
+                                                    onChange={e => setOwnerPhone(e.target.value)}
+                                                    required
+                                                    style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 14, outline: 'none' }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6 }}>Owner Email</label>
+                                                <input
+                                                    type="email"
+                                                    placeholder="email@example.com"
+                                                    value={ownerEmail}
+                                                    onChange={e => setOwnerEmail(e.target.value)}
+                                                    required
+                                                    style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 14, outline: 'none' }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ marginBottom: 24 }}>
+                                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6 }}>Shop Full Address</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Street, Landmark, Building..."
+                                                value={shopAddress}
+                                                onChange={e => setShopAddress(e.target.value)}
+                                                required
+                                                style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 14, outline: 'none' }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {error && <div style={{ background: 'var(--red-bg)', border: '1px solid var(--red-bdr)', color: 'var(--red)', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 16 }}>{error}</div>}
+
+                                    <button type="submit" disabled={loading} style={{ width: '100%', padding: 14, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'opacity 0.2s', opacity: loading ? 0.7 : 1 }}>
+                                        {loading ? 'Creating Account...' : 'Register Store'}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => { setRegMode(false); setError(''); }}
+                                        style={{ width: '100%', padding: 14, background: 'transparent', color: 'var(--mut)', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', marginTop: 8 }}
+                                    >
+                                        Already have an account? Sign In
+                                    </button>
+                                </form>
+                            </>
+                        )}
+                    </div>
                 ) : (
+
                     <div style={{ width: '100%', maxWidth: 360, margin: '0 auto' }}>
                         <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 28, marginBottom: 8, color: 'var(--ink)' }}>Reset Password</h2>
                         <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 32 }}>Enter the email associated with your store account</p>
