@@ -3,11 +3,12 @@ export interface Store {
     shopId: string
     name: string
     location: string
-    subscriptionStatus: 'active' | 'grace' | 'expired' | 'none'
-    subscriptionPlan: 'starter' | 'growth' | 'enterprise' | null
-    subscriptionExpiry: string | null
+    upiId: string | null
+    planTier: string | null
+    planExpiresAt: string | null
+    gracePeriodEndsAt: string | null
+    isLocked: boolean
 }
-
 export interface Product {
     id: number
     barcode: string
@@ -16,12 +17,11 @@ export interface Product {
     quantity: number
     lowStockThreshold: number
     isOutOfStock: boolean
-    discountType: 'percentage' | 'flat' | null
-    discountValue: string | null
-    discountActive: boolean
-    discountExpiry: string | null
+    discountType: 'PERCENTAGE' | 'FLAT' | null
+    discountValue: number | null
+    isDiscountActive: boolean
+    discountExpiresAt: string | null
 }
-
 export interface StockLog {
     id: number
     productId: number
@@ -31,7 +31,6 @@ export interface StockLog {
     reason: string | null
     createdAt: string
 }
-
 export interface Transaction {
     id: number
     sessionId: string
