@@ -10,6 +10,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false)
     const [forgotMode, setForgotMode] = useState(false)
     const [forgotEmail, setForgotEmail] = useState('')
+    const [forgotShopId, setForgotShopId] = useState('')
     const [forgotSent, setForgotSent] = useState(false)
 
     // Registration states
@@ -252,32 +253,57 @@ export default function Login() {
                         <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 32 }}>Enter the email associated with your store account</p>
 
                         {!forgotSent ? (
-                            <form onSubmit={(e) => { e.preventDefault(); setForgotSent(true) }}>
-                                <div style={{ marginBottom: 20 }}>
-                                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Email Address</label>
+                            <div onKeyDown={e => e.key === 'Enter' && setForgotSent(true)}>
+                                <div style={{ marginBottom: 16 }}>
+                                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Shop ID</label>
+                                    <input
+                                        type="text"
+                                        placeholder="SCRT-XXXXXX"
+                                        value={forgotShopId}
+                                        onChange={e => setForgotShopId(e.target.value)}
+                                        style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontFamily: 'JetBrains Mono', outline: 'none' }}
+                                    />
+                                </div>
+                                <div style={{ marginBottom: 24 }}>
+                                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Registered Email</label>
                                     <input
                                         type="email"
                                         placeholder="owner@store.com"
                                         value={forgotEmail}
                                         onChange={e => setForgotEmail(e.target.value)}
-                                        required
-                                        style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontFamily: 'inherit', outline: 'none', marginBottom: 24 }}
+                                        style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontFamily: 'inherit', outline: 'none' }}
                                     />
-                                    <button type="submit" style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
-                                        Send Reset Link
-                                    </button>
                                 </div>
-                                <button type="button" onClick={() => setForgotMode(false)} style={{ width: '100%', padding: 16, background: 'transparent', color: 'var(--mut)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+
+                                <button 
+                                    type="button" 
+                                    onClick={() => setForgotSent(true)} 
+                                    style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 16 }}
+                                >
+                                    Reset Password
+                                </button>
+                                
+                                <button 
+                                    type="button" 
+                                    onClick={() => setForgotMode(false)} 
+                                    style={{ width: '100%', padding: 16, background: 'transparent', color: 'var(--mut)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+                                >
                                     Back to Sign In
                                 </button>
-                            </form>
+                            </div>
                         ) : (
                             <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                                <div style={{ fontSize: 40, marginBottom: 16 }}>✉️</div>
-                                <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8, color: 'var(--ink)' }}>Check your inbox</div>
-                                <div style={{ fontSize: 14, color: 'var(--mut)', marginBottom: 32 }}>We've sent password reset instructions to <strong style={{ color: 'var(--ink)' }}>{forgotEmail}</strong></div>
+                                <div style={{ fontSize: 40, marginBottom: 16 }}>🛠️</div>
+                                <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: 'var(--ink)' }}>Support Required</div>
+                                <div style={{ fontSize: 14, color: 'var(--mut)', lineHeight: 1.6, marginBottom: 32 }}>
+                                    Please contact support at <strong style={{ color: 'var(--accent)' }}>support@supercarts.in</strong> to reset your password for Shop ID <strong>{forgotShopId}</strong>.
+                                </div>
 
-                                <button type="button" onClick={() => { setForgotMode(false); setForgotSent(false); setForgotEmail(''); }} style={{ background: 'none', border: 'none', color: 'var(--blu)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                                <button 
+                                    type="button" 
+                                    onClick={() => { setForgotMode(false); setForgotSent(false); setForgotShopId(''); setForgotEmail(''); }} 
+                                    style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                                >
                                     ← Back to Sign In
                                 </button>
                             </div>
