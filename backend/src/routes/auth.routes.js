@@ -7,5 +7,7 @@ const { validateCustomerLogin, validateStoreLogin, validateStoreRegister } = req
 router.post('/login', validateCustomerLogin, authController.login);
 router.post('/store-login', validateStoreLogin, authController.storeLogin);
 router.post('/store-register', validateStoreRegister, authController.storeRegister);
+router.post('/store-forgot-password', authController.storeForgotPassword);
+router.post('/store-reset-password', authController.storeResetPassword);
 
 module.exports = router;

@@ -64,6 +64,14 @@ const Store = db.define('store', {
     shopAddress: {
         type: Sequelize.STRING,
         allowNull: true
+    },
+    otpCode: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    otpExpiresAt: {
+        type: Sequelize.DATE,
+        allowNull: true
     }
 });
 
