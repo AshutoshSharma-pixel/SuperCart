@@ -10,12 +10,13 @@ const PLANS = [
 
 export default function Subscription() {
     const { store } = useAuth()
+    const currentPlan = (store as any)?.planTier;
 
-    const daysLeft = store?.subscriptionExpiry ? Math.max(0, Math.ceil((new Date(store.subscriptionExpiry).getTime() - Date.now()) / 86400000)) : 0
+    const daysLeft = (store as any)?.planExpiresAt ? Math.max(0, Math.ceil((new Date((store as any).planExpiresAt).getTime() - Date.now()) / 86400000)) : 0
 
     const handleUpgrade = async (planId: string) => {
         try {
-            const { data } = await api.post('/subscription/create-order', { plan: planId })
+            const { data } = await api.post('/subscription/create-order', { planTier: planId.toUpperCase() })
 
             const options = {
                 key: data.key,
@@ -29,7 +30,7 @@ export default function Subscription() {
                         razorpay_order_id: response.razorpay_order_id,
                         razorpay_payment_id: response.razorpay_payment_id,
                         razorpay_signature: response.razorpay_signature,
-                        plan: planId
+                        planTier: planId.toUpperCase()
                     })
                     alert('Subscription updated successfully! Please refresh.')
                     window.location.reload()
@@ -50,17 +51,17 @@ export default function Subscription() {
             <div style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--ink) 100%)', borderRadius: 16, padding: 40, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 12px 32px rgba(13,15,26,0.15)' }}>
                 <div>
                     <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                        <span style={{ background: 'var(--gold)', color: 'var(--ink)', padding: '4px 12px', borderRadius: 100, fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{store?.subscriptionPlan || 'No Plan'}</span>
-                        <span style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: 100, fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono', letterSpacing: '0.05em' }}>{store?.subscriptionStatus === 'active' ? 'ACTIVE' : 'EXPIRED'}</span>
+                        <span style={{ background: 'var(--gold)', color: 'var(--ink)', padding: '4px 12px', borderRadius: 100, fontSize: 11, fontFamily: 'JetBrains Mono', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{currentPlan || 'No Plan'}</span>
+                        <span style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: 100, fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono', letterSpacing: '0.05em' }}>{!(store as any)?.isLocked ? 'ACTIVE' : 'EXPIRED'}</span>
                     </div>
-                    <h2 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 32, marginBottom: 8 }}>{store?.subscriptionStatus === 'active' ? 'Your plan is active' : 'Plan expired'}</h2>
+                    <h2 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 32, marginBottom: 8 }}>{!(store as any)?.isLocked ? 'Your plan is active' : 'Plan expired'}</h2>
                     <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, maxWidth: 500 }}>Accessing full features and unlimited telemetry across smart-carts.</p>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
                     <div style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 64, color: 'var(--gold)', lineHeight: 1 }}>{daysLeft}</div>
                     <div style={{ fontFamily: 'JetBrains Mono', color: 'rgba(255,255,255,0.7)', fontSize: 12, letterSpacing: '0.05em', marginBottom: 16 }}>DAYS REMAINING</div>
-                    <button onClick={() => handleUpgrade(store?.subscriptionPlan || 'growth')} style={{ background: 'white', color: 'var(--ink)', border: 'none', padding: '12px 24px', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Renew Plan</button>
+                    <button onClick={() => handleUpgrade(currentPlan || 'growth')} style={{ background: 'white', color: 'var(--ink)', border: 'none', padding: '12px 24px', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Renew Plan</button>
                 </div>
             </div>
 
@@ -71,12 +72,12 @@ export default function Subscription() {
                     <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18, marginBottom: 20 }}>Current Plan Details</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {[
-                            { k: 'Plan Tier', v: store?.subscriptionPlan },
-                            { k: 'Price', v: '₹' + (PLANS.find(p => p.id === store?.subscriptionPlan)?.price || '0') + ' / month' },
-                            { k: 'Transactions', v: PLANS.find(p => p.id === store?.subscriptionPlan)?.txns },
-                            { k: 'SKUs Active', v: PLANS.find(p => p.id === store?.subscriptionPlan)?.skus },
-                            { k: 'Support Channel', v: PLANS.find(p => p.id === store?.subscriptionPlan)?.support },
-                            { k: 'Expiry Date', v: store?.subscriptionExpiry ? new Date(store.subscriptionExpiry).toLocaleDateString() : 'None' },
+                            { k: 'Plan Tier', v: currentPlan },
+                            { k: 'Price', v: '₹' + (PLANS.find(p => p.id === currentPlan?.toLowerCase())?.price || '0') + ' / month' },
+                            { k: 'Transactions', v: PLANS.find(p => p.id === currentPlan?.toLowerCase())?.txns },
+                            { k: 'SKUs Active', v: PLANS.find(p => p.id === currentPlan?.toLowerCase())?.skus },
+                            { k: 'Support Channel', v: PLANS.find(p => p.id === currentPlan?.toLowerCase())?.support },
+                            { k: 'Expiry Date', v: (store as any)?.planExpiresAt ? new Date((store as any).planExpiresAt).toLocaleDateString() : 'None' },
                             { k: 'Shop ID', v: <span style={{ fontFamily: 'JetBrains Mono', color: 'var(--gold)' }}>{store?.shopId}</span> }
                         ].map((row, i) => (
                             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--bdr2)', paddingBottom: 16 }}>
@@ -94,7 +95,7 @@ export default function Subscription() {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {PLANS.map(plan => {
-                            const isActive = store?.subscriptionPlan === plan.id;
+                            const isActive = currentPlan?.toLowerCase() === plan.id;
                             return (
                                 <div key={plan.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--surf)', border: `2px solid ${isActive ? 'var(--ink)' : 'var(--bdr)'}`, borderRadius: 12, padding: 24 }}>
                                     <div>
