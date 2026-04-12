@@ -112,61 +112,7 @@ export default function Login() {
             </div>
 
             {/* Right Panel */}
-            <div style={{ width: 460, background: 'var(--surf)', padding: '60px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-
-                {!forgotMode ? (
-                    <div style={{ width: '100%', maxWidth: 360, margin: '0 auto' }}>
-                        <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 28, marginBottom: 8, color: 'var(--ink)' }}>Store Sign In</h2>
-                        <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 32 }}>Enter your Shop ID and password to continue</p>
-
-                        <form onSubmit={handleLogin}>
-                            <div style={{ marginBottom: 20 }}>
-                                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Shop ID</label>
-                                <input
-                                    type="text"
-                                    placeholder="SCRT-XXXXXX"
-                                    value={shopId}
-                                    onChange={e => setShopId(e.target.value)}
-                                    style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontFamily: 'JetBrains Mono', outline: 'none' }}
-                                />
-                            </div>
-
-                            <div style={{ marginBottom: 12 }}>
-                                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Password</label>
-                                <input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                    style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontFamily: 'inherit', outline: 'none' }}
-                                />
-                            </div>
-
-                            <div style={{ textAlign: 'right', marginBottom: 24 }}>
-                                <button type="button" onClick={() => setForgotMode(true)} style={{ background: 'none', border: 'none', color: 'var(--blu)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
-                                    Forgot password?
-                                </button>
-                            </div>
-
-                            {error && <div style={{ background: 'var(--red-bg)', border: '1px solid var(--red-bdr)', color: 'var(--red)', padding: '12px 16px', borderRadius: 8, fontSize: 13, marginBottom: 20 }}>{error}</div>}
-
-                            <button type="submit" disabled={loading} style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'opacity 0.2s', opacity: loading ? 0.7 : 1 }}>
-                                {loading ? 'Authenticating...' : 'Sign In to Portal'}
-                            </button>
-
-                            <div style={{ textAlign: 'center', marginTop: 32 }}>
-                                <p style={{ fontSize: 13, color: 'var(--mut)', marginBottom: 12 }}>New to SuperCart?</p>
-                                <button
-                                    type="button"
-                                    onClick={() => { setRegMode(true); setError(''); }}
-                                    style={{ width: '100%', padding: '12px', background: 'transparent', color: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                                >
-                                    Create a Store Account
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                ) : regMode ? (
+            <div style={{ width: 460, background: 'var(--surf)', padding: '60px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>                {regMode ? (
                     <div style={{ width: '100%', maxWidth: 360, margin: '0 auto', paddingBottom: 40 }}>
                         {registeredShopId ? (
                             <div style={{ textAlign: 'center' }}>
@@ -299,8 +245,7 @@ export default function Login() {
                             </>
                         )}
                     </div>
-                ) : (
-
+                ) : forgotMode ? (
                     <div style={{ width: '100%', maxWidth: 360, margin: '0 auto' }}>
                         <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 28, marginBottom: 8, color: 'var(--ink)' }}>Reset Password</h2>
                         <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 32 }}>Enter the email associated with your store account</p>
@@ -337,7 +282,60 @@ export default function Login() {
                             </div>
                         )}
                     </div>
+                ) : (
+                    <div style={{ width: '100%', maxWidth: 360, margin: '0 auto' }}>
+                        <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 28, marginBottom: 8, color: 'var(--ink)' }}>Store Sign In</h2>
+                        <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 32 }}>Enter your Shop ID and password to continue</p>
+
+                        <form onSubmit={handleLogin}>
+                            <div style={{ marginBottom: 20 }}>
+                                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Shop ID</label>
+                                <input
+                                    type="text"
+                                    placeholder="SCRT-XXXXXX"
+                                    value={shopId}
+                                    onChange={e => setShopId(e.target.value)}
+                                    style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontFamily: 'JetBrains Mono', outline: 'none' }}
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: 12 }}>
+                                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Password</label>
+                                <input
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                    style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontFamily: 'inherit', outline: 'none' }}
+                                />
+                            </div>
+
+                            <div style={{ textAlign: 'right', marginBottom: 24 }}>
+                                <button type="button" onClick={() => setForgotMode(true)} style={{ background: 'none', border: 'none', color: 'var(--blu)', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
+                                    Forgot password?
+                                </button>
+                            </div>
+
+                            {error && <div style={{ background: 'var(--red-bg)', border: '1px solid var(--red-bdr)', color: 'var(--red)', padding: '12px 16px', borderRadius: 8, fontSize: 13, marginBottom: 20 }}>{error}</div>}
+
+                            <button type="submit" disabled={loading} style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', transition: 'opacity 0.2s', opacity: loading ? 0.7 : 1 }}>
+                                {loading ? 'Authenticating...' : 'Sign In to Portal'}
+                            </button>
+
+                            <div style={{ textAlign: 'center', marginTop: 32 }}>
+                                <p style={{ fontSize: 13, color: 'var(--mut)', marginBottom: 12 }}>New to SuperCart?</p>
+                                <button
+                                    type="button"
+                                    onClick={() => { setRegMode(true); setError(''); }}
+                                    style={{ width: '100%', padding: '12px', background: 'transparent', color: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                                >
+                                    Create a Store Account
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 )}
+
 
                 <div style={{ marginTop: 'auto', textAlign: 'center', fontSize: 11, fontFamily: 'JetBrains Mono', color: 'var(--mut)', letterSpacing: '0.05em', paddingTop: 40 }}>
                     SECURED BY SUPERCART · ALL DATA ENCRYPTED
