@@ -72,6 +72,14 @@ const Store = db.define('store', {
     otpExpiresAt: {
         type: Sequelize.DATE,
         allowNull: true
+    },
+    razorpayKeyId: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    razorpayKeySecret: {
+        type: Sequelize.TEXT,
+        allowNull: true
     }
 });
 

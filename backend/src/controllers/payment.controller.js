@@ -1,24 +1,42 @@
-const { Session, Product, CartItem } = require('../models');
+const { Session, Product, CartItem, Store } = require('../models');
 const jwt = require('jsonwebtoken');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { Sequelize } = require('sequelize');
+const { decryptSecret } = require('../utils/encryption');
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+// Note: Global razorpay instance removed to favor store-specific instances in controllers
+
 
 // 1. Create Order
 exports.createOrder = async (req, res, next) => {
     try {
         const { sessionId } = req.body;
-        const session = await Session.findByPk(sessionId);
+        const session = await Session.findByPk(sessionId, {
+            include: [{ model: Store }]
+        });
 
         if (!session || session.status !== 'ACTIVE') {
             return res.status(400).json({ error: 'Invalid or inactive session' });
         }
+
+        const store = session.store;
+        if (!store || !store.razorpayKeyId || !store.razorpayKeySecret) {
+            return res.status(400).json({ error: "Store has not configured payment settings" });
+        }
+
+        let razorpayKeySecret;
+        try {
+            razorpayKeySecret = decryptSecret(store.razorpayKeySecret);
+        } catch (err) {
+            console.error('Decryption failed for store', store.id, err);
+            return res.status(500).json({ error: "Internal server error: payment configuration issue" });
+        }
+
+        const razorpay = new Razorpay({
+            key_id: store.razorpayKeyId,
+            key_secret: razorpayKeySecret
+        });
 
         // Calculate amount (ensure it matches DB total or recalculate)
         // For safety, let's recalculate or trust the totalAmount if updated
@@ -43,7 +61,7 @@ exports.createOrder = async (req, res, next) => {
             orderId: order.id,
             amount: order.amount,
             currency: order.currency,
-            key: process.env.RAZORPAY_KEY_ID
+            key: store.razorpayKeyId
         });
 
     } catch (error) {
@@ -57,14 +75,29 @@ exports.verifyPayment = async (req, res, next) => {
     try {
         const { sessionId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-        const session = await Session.findByPk(sessionId);
+        const session = await Session.findByPk(sessionId, {
+            include: [{ model: Store }]
+        });
         if (!session) return res.status(404).json({ error: 'Session not found' });
+
+        const store = session.store;
+        if (!store || !store.razorpayKeySecret) {
+            return res.status(400).json({ error: "Store has not configured payment settings" });
+        }
+
+        let razorpayKeySecret;
+        try {
+            razorpayKeySecret = decryptSecret(store.razorpayKeySecret);
+        } catch (err) {
+            console.error('Decryption failed for store', store.id, err);
+            return res.status(500).json({ error: "Internal server error: payment configuration issue" });
+        }
 
         // Verify Signature
         // content to hash: order_id + "|" + payment_id
         const body = razorpay_order_id + "|" + razorpay_payment_id;
         const expectedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .createHmac('sha256', razorpayKeySecret)
             .update(body.toString())
             .digest('hex');
 
