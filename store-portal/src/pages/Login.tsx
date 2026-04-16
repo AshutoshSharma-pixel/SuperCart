@@ -12,6 +12,10 @@ export default function Login() {
     const [forgotEmail, setForgotEmail] = useState('')
     const [forgotShopId, setForgotShopId] = useState('')
     const [forgotSent, setForgotSent] = useState(false)
+    const [resetOtp, setResetOtp] = useState('')
+    const [newPassword, setNewPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [resetSuccess, setResetSuccess] = useState(false)
 
     // Registration states
     const [regMode, setRegMode] = useState(false)
@@ -61,6 +65,62 @@ export default function Login() {
             setRegisteredShopId(data.shopId)
         } catch (err: any) {
             setError(err.response?.data?.error || 'Registration failed. Please fill all required fields correctly.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleForgotPasswordRequest = async () => {
+        if (!forgotShopId || !forgotEmail) {
+            setError('Shop ID and Registered Email are required')
+            return
+        }
+        setError('')
+        setLoading(true)
+        try {
+            await api.post('/auth/store-forgot-password', {
+                shopId: forgotShopId,
+                email: forgotEmail
+            })
+            setForgotSent(true)
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Failed to request password reset. Please try again.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleResetPasswordSubmit = async () => {
+        if (!resetOtp || !newPassword || !confirmPassword) {
+            setError('All fields are required')
+            return
+        }
+        if (newPassword !== confirmPassword) {
+            setError('Passwords do not match')
+            return
+        }
+        setError('')
+        setLoading(true)
+        try {
+            await api.post('/auth/store-reset-password', {
+                shopId: forgotShopId,
+                otp: resetOtp,
+                newPassword: newPassword
+            })
+            setResetSuccess(true)
+            setTimeout(() => {
+                setForgotMode(false)
+                setForgotSent(false)
+                setResetSuccess(false)
+                setResetOtp('')
+                setNewPassword('')
+                setConfirmPassword('')
+                setForgotShopId('')
+                setForgotEmail('')
+                setShopId(forgotShopId) // Pre-fill shopId for login
+            }, 2000)
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Failed to reset password. Please check the OTP.')
         } finally {
             setLoading(false)
         }
@@ -249,11 +309,15 @@ export default function Login() {
                     </div>
                 ) : forgotMode ? (
                     <div style={{ width: '100%', maxWidth: 360, margin: '0 auto' }}>
-                        <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 28, marginBottom: 8, color: 'var(--ink)' }}>Reset Password</h2>
-                        <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 32 }}>Enter the email associated with your store account</p>
+                        <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 28, marginBottom: 8, color: 'var(--ink)' }}>
+                            {resetSuccess ? 'Password Reset!' : forgotSent ? 'Verify OTP' : 'Reset Password'}
+                        </h2>
+                        <p style={{ color: 'var(--mut)', fontSize: 15, marginBottom: 32 }}>
+                            {resetSuccess ? 'Your password has been updated safely.' : forgotSent ? 'Enter the security code sent to your email' : 'Enter the email associated with your store account'}
+                        </p>
 
                         {!forgotSent ? (
-                            <div onKeyDown={e => e.key === 'Enter' && setForgotSent(true)}>
+                            <div onKeyDown={e => e.key === 'Enter' && handleForgotPasswordRequest()}>
                                 <div style={{ marginBottom: 16 }}>
                                     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Shop ID</label>
                                     <input
@@ -275,36 +339,86 @@ export default function Login() {
                                     />
                                 </div>
 
+                                {error && <div style={{ background: 'var(--red-bg)', border: '1px solid var(--red-bdr)', color: 'var(--red)', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 16 }}>{error}</div>}
+
                                 <button 
                                     type="button" 
-                                    onClick={() => setForgotSent(true)} 
-                                    style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 16 }}
+                                    disabled={loading}
+                                    onClick={() => handleForgotPasswordRequest()} 
+                                    style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', marginBottom: 16, opacity: loading ? 0.7 : 1 }}
                                 >
-                                    Reset Password
+                                    {loading ? 'Sending OTP...' : 'Send OTP Code'}
                                 </button>
                                 
                                 <button 
                                     type="button" 
-                                    onClick={() => setForgotMode(false)} 
+                                    onClick={() => { setForgotMode(false); setError(''); }} 
                                     style={{ width: '100%', padding: 16, background: 'transparent', color: 'var(--mut)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
                                 >
                                     Back to Sign In
                                 </button>
                             </div>
-                        ) : (
+                        ) : resetSuccess ? (
                             <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                                <div style={{ fontSize: 40, marginBottom: 16 }}>🛠️</div>
-                                <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: 'var(--ink)' }}>Support Required</div>
+                                <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
+                                <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: 'var(--ink)' }}>Success!</div>
                                 <div style={{ fontSize: 14, color: 'var(--mut)', lineHeight: 1.6, marginBottom: 32 }}>
-                                    Please contact support at <strong style={{ color: 'var(--accent)' }}>support@supercarts.in</strong> to reset your password for Shop ID <strong>{forgotShopId}</strong>.
+                                    Your password has been reset successfully. Redirecting you to login...
                                 </div>
+                            </div>
+                        ) : (
+                            <div onKeyDown={e => e.key === 'Enter' && handleResetPasswordSubmit()}>
+                                <div style={{ marginBottom: 16 }}>
+                                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>OTP Code</label>
+                                    <input
+                                        type="text"
+                                        placeholder="6-digit code"
+                                        maxLength={6}
+                                        value={resetOtp}
+                                        onChange={e => setResetOtp(e.target.value)}
+                                        style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontFamily: 'JetBrains Mono', outline: 'none' }}
+                                    />
+                                </div>
+
+                                <div style={{ marginBottom: 16 }}>
+                                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>New Password</label>
+                                    <input
+                                        type="password"
+                                        placeholder="Min 8 characters"
+                                        value={newPassword}
+                                        onChange={e => setNewPassword(e.target.value)}
+                                        style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, outline: 'none' }}
+                                    />
+                                </div>
+
+                                <div style={{ marginBottom: 24 }}>
+                                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink2)', marginBottom: 8 }}>Confirm Password</label>
+                                    <input
+                                        type="password"
+                                        placeholder="Repeat new password"
+                                        value={confirmPassword}
+                                        onChange={e => setConfirmPassword(e.target.value)}
+                                        style={{ width: '100%', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, outline: 'none' }}
+                                    />
+                                </div>
+
+                                {error && <div style={{ background: 'var(--red-bg)', border: '1px solid var(--red-bdr)', color: 'var(--red)', padding: '10px 14px', borderRadius: 8, fontSize: 12, marginBottom: 16 }}>{error}</div>}
 
                                 <button 
                                     type="button" 
-                                    onClick={() => { setForgotMode(false); setForgotSent(false); setForgotShopId(''); setForgotEmail(''); }} 
-                                    style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                                    disabled={loading}
+                                    onClick={() => handleResetPasswordSubmit()} 
+                                    style={{ width: '100%', padding: 16, background: 'var(--accent)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', marginBottom: 16, opacity: loading ? 0.7 : 1 }}
                                 >
-                                    ← Back to Sign In
+                                    {loading ? 'Updating Password...' : 'Reset Password'}
+                                </button>
+                                
+                                <button 
+                                    type="button" 
+                                    onClick={() => { setForgotSent(false); setError(''); }} 
+                                    style={{ width: '100%', padding: 16, background: 'transparent', color: 'var(--mut)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+                                >
+                                    ← Back
                                 </button>
                             </div>
                         )}
