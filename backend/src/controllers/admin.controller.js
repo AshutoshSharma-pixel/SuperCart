@@ -1,5 +1,6 @@
 const { Session, User, Store } = require('../models');
 const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize');
 
 exports.adminLogin = async (req, res, next) => {
     try {
@@ -89,6 +90,51 @@ exports.getStoreDetail = async (req, res, next) => {
         res.json(store);
     } catch (error) {
         console.error('Store Detail Error:', error);
+        next(error);
+    }
+};
+
+exports.getStats = async (req, res, next) => {
+    try {
+        const todayStart = new Date();
+        todayStart.setUTCHours(0, 0, 0, 0);
+
+        const [
+            totalStores,
+            activeStores,
+            totalTransactions,
+            totalRevenue,
+            newStoresToday,
+            transactionsToday
+        ] = await Promise.all([
+            Store.count(),
+            Store.count({ where: { isLocked: false } }),
+            Session.count({ where: { status: 'COMPLETED' } }),
+            Session.sum('totalAmount', { where: { status: 'COMPLETED' } }),
+            Store.count({ 
+                where: { 
+                    createdAt: { [Op.gte]: todayStart } 
+                } 
+            }),
+            Session.count({ 
+                where: { 
+                    status: 'COMPLETED', 
+                    updatedAt: { [Op.gte]: todayStart } 
+                } 
+            })
+        ]);
+
+        res.json({
+            totalStores,
+            activeStores,
+            totalTransactions,
+            totalRevenue: totalRevenue || 0,
+            newStoresToday,
+            transactionsToday
+        });
+
+    } catch (error) {
+        console.error('Admin Stats Error:', error);
         next(error);
     }
 };
