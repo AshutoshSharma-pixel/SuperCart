@@ -28,7 +28,7 @@ export default function App() {
           <Route path="stock" element={<StockManagement />} />
           <Route path="discounts" element={<Discounts />} />
           <Route path="subscription" element={<Subscription />} />
-          <Route path="payment-settings" element={<PaymentSettings />} />
+          <Route path="/payment-settings" element={<ProtectedRoute><PaymentSettings /></ProtectedRoute>} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

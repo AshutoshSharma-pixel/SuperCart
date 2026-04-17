@@ -110,9 +110,9 @@ export default function PaymentSettings() {
 
                     {statusMsg && (
                         <div style={{ 
-                            background: statusMsg.type === 'success' ? 'var(--blue-bg)' : 'var(--red-bg)', 
-                            border: `1px solid ${statusMsg.type === 'success' ? 'var(--blue-bdr)' : 'var(--red-bdr)'}`, 
-                            color: statusMsg.type === 'success' ? 'var(--blu)' : 'var(--red)', 
+                            background: statusMsg.type === 'success' ? '#ecfdf5' : 'var(--red-bg)', 
+                            border: `1px solid ${statusMsg.type === 'success' ? '#10b981' : 'var(--red-bdr)'}`, 
+                            color: statusMsg.type === 'success' ? '#064e3b' : 'var(--red)', 
                             padding: '12px 14px', 
                             borderRadius: 8, 
                             fontSize: 13 
