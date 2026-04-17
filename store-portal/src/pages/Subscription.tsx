@@ -10,9 +10,13 @@ const PLANS = [
 
 export default function Subscription() {
     const { store } = useAuth()
-    const currentPlan = (store as any)?.planTier;
+    const currentPlan = (store as any)?.planTier; // 'Starter', 'Growth', etc.
+    const currentPlanId = currentPlan?.toLowerCase(); // 'starter', 'growth', etc.
 
-    const daysLeft = (store as any)?.planExpiresAt ? Math.max(0, Math.ceil((new Date((store as any).planExpiresAt).getTime() - Date.now()) / 86400000)) : 0
+    const expiryDate = (store as any)?.planExpiresAt ? new Date((store as any).planExpiresAt) : null;
+    const isPlanActive = !(store as any)?.isLocked && expiryDate && expiryDate > new Date();
+
+    const daysLeft = expiryDate ? Math.max(0, Math.ceil((expiryDate.getTime() - Date.now()) / 86400000)) : 0
 
     const handleUpgrade = async (planId: string) => {
         try {
@@ -52,16 +56,16 @@ export default function Subscription() {
                 <div>
                     <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
                         <span style={{ background: 'var(--gold)', color: 'var(--ink)', padding: '4px 12px', borderRadius: 100, fontSize: 11, fontFamily: 'JetBrains Mono', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{currentPlan || 'No Plan'}</span>
-                        <span style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: 100, fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono', letterSpacing: '0.05em' }}>{!(store as any)?.isLocked ? 'ACTIVE' : 'EXPIRED'}</span>
+                        <span style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 12px', borderRadius: 100, fontSize: 11, fontWeight: 700, fontFamily: 'JetBrains Mono', letterSpacing: '0.05em' }}>{isPlanActive ? 'ACTIVE' : 'EXPIRED'}</span>
                     </div>
-                    <h2 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 32, marginBottom: 8 }}>{!(store as any)?.isLocked ? 'Your plan is active' : 'Plan expired'}</h2>
+                    <h2 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 32, marginBottom: 8 }}>{isPlanActive ? 'Your plan is active' : 'Plan expired'}</h2>
                     <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, maxWidth: 500 }}>Accessing full features and unlimited telemetry across smart-carts.</p>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
                     <div style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 64, color: 'var(--gold)', lineHeight: 1 }}>{daysLeft}</div>
                     <div style={{ fontFamily: 'JetBrains Mono', color: 'rgba(255,255,255,0.7)', fontSize: 12, letterSpacing: '0.05em', marginBottom: 16 }}>DAYS REMAINING</div>
-                    <button onClick={() => handleUpgrade(currentPlan || 'growth')} style={{ background: 'white', color: 'var(--ink)', border: 'none', padding: '12px 24px', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Renew Plan</button>
+                    <button onClick={() => handleUpgrade(currentPlanId || 'growth')} style={{ background: 'white', color: 'var(--ink)', border: 'none', padding: '12px 24px', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Renew Plan</button>
                 </div>
             </div>
 
@@ -73,11 +77,11 @@ export default function Subscription() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {[
                             { k: 'Plan Tier', v: currentPlan },
-                            { k: 'Price', v: '₹' + (PLANS.find(p => p.id === currentPlan?.toLowerCase())?.price || '0') + ' / month' },
-                            { k: 'Transactions', v: PLANS.find(p => p.id === currentPlan?.toLowerCase())?.txns },
-                            { k: 'SKUs Active', v: PLANS.find(p => p.id === currentPlan?.toLowerCase())?.skus },
-                            { k: 'Support Channel', v: PLANS.find(p => p.id === currentPlan?.toLowerCase())?.support },
-                            { k: 'Expiry Date', v: (store as any)?.planExpiresAt ? new Date((store as any).planExpiresAt).toLocaleDateString() : 'None' },
+                            { k: 'Price', v: '₹' + (PLANS.find(p => p.id === currentPlanId)?.price || '0') + ' / month' },
+                            { k: 'Transactions', v: PLANS.find(p => p.id === currentPlanId)?.txns },
+                            { k: 'SKUs Active', v: PLANS.find(p => p.id === currentPlanId)?.skus },
+                            { k: 'Support Channel', v: PLANS.find(p => p.id === currentPlanId)?.support },
+                            { k: 'Expiry Date', v: expiryDate ? expiryDate.toLocaleDateString() : 'None' },
                             { k: 'Shop ID', v: <span style={{ fontFamily: 'JetBrains Mono', color: 'var(--gold)' }}>{store?.shopId}</span> }
                         ].map((row, i) => (
                             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--bdr2)', paddingBottom: 16 }}>
@@ -95,7 +99,7 @@ export default function Subscription() {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {PLANS.map(plan => {
-                            const isActive = currentPlan?.toLowerCase() === plan.id;
+                            const isActive = currentPlanId === plan.id;
                             return (
                                 <div key={plan.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--surf)', border: `2px solid ${isActive ? 'var(--ink)' : 'var(--bdr)'}`, borderRadius: 12, padding: 24 }}>
                                     <div>

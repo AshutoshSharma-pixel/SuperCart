@@ -22,6 +22,7 @@ export default function Sidebar() {
         },
         {
             label: 'ACCOUNT', items: [
+                { path: '/payment-settings', icon: '💳', name: 'Payment Settings' },
                 { path: '/subscription', icon: '★', name: 'Subscription' }
             ]
         }
