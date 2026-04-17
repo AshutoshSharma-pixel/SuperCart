@@ -71,7 +71,8 @@ exports.storeLogin = async (req, res, next) => {
             { expiresIn: '7d' }
         );
 
-        res.json({ token, store });
+        const { passwordHash, otpCode, otpExpiresAt, razorpayKeySecret, ...safeStore } = store.toJSON();
+        res.json({ token, store: safeStore });
 
     } catch (error) {
         console.error('Store login error:', error);
