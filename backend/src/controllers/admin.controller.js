@@ -109,8 +109,8 @@ exports.getStats = async (req, res, next) => {
         ] = await Promise.all([
             Store.count(),
             Store.count({ where: { isLocked: false } }),
-            Session.count({ where: { status: 'COMPLETED' } }),
-            Session.sum('totalAmount', { where: { status: 'COMPLETED' } }),
+            Session.count({ where: { status: 'PAID' } }),
+            Session.sum('totalAmount', { where: { status: 'PAID' } }),
             Store.count({ 
                 where: { 
                     createdAt: { [Op.gte]: todayStart } 
@@ -118,7 +118,7 @@ exports.getStats = async (req, res, next) => {
             }),
             Session.count({ 
                 where: { 
-                    status: 'COMPLETED', 
+                    status: 'PAID', 
                     updatedAt: { [Op.gte]: todayStart } 
                 } 
             })
