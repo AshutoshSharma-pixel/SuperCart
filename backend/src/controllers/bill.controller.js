@@ -59,11 +59,12 @@ exports.generateBill = async (req, res, next) => {
         let totalSavings = 0;
         session.products.forEach((product) => {
             const qty = product.cart_item.quantity;
-            const originalPrice = product.cart_item.priceSnapshot;
-            const finalPrice = product.cart_item.finalPriceSnapshot;
-            const discountApplied = product.cart_item.discountApplied;
-            const total = finalPrice * qty;
-            totalSavings += (product.cart_item.savings || 0) * qty;
+            const originalPrice = product.cart_item.priceSnapshot ?? 0;
+            const finalPrice = product.cart_item.finalPriceSnapshot ?? product.cart_item.priceSnapshot;
+            const discountApplied = product.cart_item.discountApplied ?? false;
+            const savings = product.cart_item.savings ?? 0;
+            const total = (finalPrice ?? 0) * qty;
+            totalSavings += savings * qty;
 
             doc.fontSize(9).text(product.name, 50, yPosition, { width: 200 });
 
