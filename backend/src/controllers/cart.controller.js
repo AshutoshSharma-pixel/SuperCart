@@ -135,21 +135,29 @@ exports.startSession = async (req, res, next) => {
         }
 
         // Check for existing active session
-        const existingSession = await Session.findOne({
+        let session = await Session.findOne({
             where: { userId, storeId, status: 'ACTIVE' }
         });
 
-        if (existingSession) {
-            return res.json(existingSession);
+        if (!session) {
+            session = await Session.create({
+                userId,
+                storeId,
+                status: 'ACTIVE'
+            });
         }
 
-        const session = await Session.create({
-            userId,
-            storeId,
-            status: 'ACTIVE'
-        });
+        // Fetch store details to include in response
+        const store = await Store.findByPk(storeId);
 
-        res.json(session);
+        res.json({
+            ...session.toJSON(),
+            store: {
+                name: store.name,
+                location: store.location,
+                shopId: store.shopId
+            }
+        });
     } catch (error) {
         console.error('Start Session Error:', error);
         next(error);
