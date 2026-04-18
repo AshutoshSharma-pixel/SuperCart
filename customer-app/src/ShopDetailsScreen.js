@@ -1,12 +1,26 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCart } from './CartContext';
 
 export default function ShopDetailsScreen() {
     const { session, startShopping, resetSession } = useCart();
+    const pulseAnim = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+        const pulse = Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, { toValue: 0.2, duration: 800, useNativeDriver: true }),
+                Animated.timing(pulseAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+            ])
+        );
+        pulse.start();
+        return () => pulse.stop();
+    }, [pulseAnim]);
 
     if (!session) return null;
+
+    const isActive = !!session;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -20,7 +34,11 @@ export default function ShopDetailsScreen() {
                         {(session?.store?.location || 'MAIN BRANCH').toUpperCase()}
                     </Text>
                     <View style={styles.pillBadge}>
-                        <Text style={styles.pillText}>SESSION ACTIVE</Text>
+                        <Animated.View style={[
+                            styles.pillDot,
+                            { backgroundColor: isActive ? '#30D158' : '#FF453A', opacity: pulseAnim }
+                        ]} />
+                        <Text style={styles.pillText}>{isActive ? 'SESSION ACTIVE' : 'SESSION INACTIVE'}</Text>
                     </View>
                 </View>
 
@@ -84,6 +102,14 @@ const styles = StyleSheet.create({
         borderRadius: 999,
         paddingHorizontal: 16,
         paddingVertical: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    pillDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        marginRight: 8,
     },
     pillText: {
         color: '#FFFFFF',
@@ -115,7 +141,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
     },
     cancelButtonText: {
-        color: '#a3a3a3',
+        color: '#FF453A',
         fontSize: 13,
         fontWeight: '500',
         textTransform: 'uppercase',
