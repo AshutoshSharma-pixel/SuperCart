@@ -24,8 +24,8 @@ api.interceptors.request.use(async (config) => {
     return config;
 });
 
-export const loginGuard = async (email, password) => {
-    const res = await api.post('/guards/login', { email, password });
+export const loginGuard = async (phone, password) => {
+    const res = await api.post('/guards/login', { phone, password });
     return res.data;
 };
 
