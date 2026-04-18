@@ -7,7 +7,7 @@ import { useCart } from './CartContext';
 const { width } = Dimensions.get('window');
 
 export default function ExitQRScreen({ token }) {
-    const { downloadBill } = useCart();
+    const { downloadBill, cart, total } = useCart();
 
     return (
         <SafeAreaView style={styles.container}>
@@ -25,7 +25,7 @@ export default function ExitQRScreen({ token }) {
                     </View>
                     <View style={styles.passHeaderRight}>
                         <Text style={styles.passHeaderLabel}>ITEMS</Text>
-                        <Text style={styles.passHeaderValue}>—</Text>
+                        <Text style={styles.passHeaderValue}>{cart?.length || 0}</Text>
                     </View>
                 </View>
 
@@ -51,7 +51,7 @@ export default function ExitQRScreen({ token }) {
                         </View>
                         <View style={styles.passFooterRight}>
                             <Text style={styles.passFooterLabel}>TOTAL</Text>
-                            <Text style={styles.passFooterValue}>PAID</Text>
+                            <Text style={styles.passFooterValue}>₹{total}</Text>
                         </View>
                     </View>
                 </View>
