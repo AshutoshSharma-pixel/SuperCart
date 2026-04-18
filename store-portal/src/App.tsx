@@ -9,6 +9,7 @@ import StockManagement from './pages/StockManagement.tsx'
 import Discounts from './pages/Discounts.tsx'
 import Subscription from './pages/Subscription.tsx'
 import PaymentSettings from './pages/PaymentSettings.tsx'
+import Guards from './pages/Guards.tsx'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="discounts" element={<Discounts />} />
           <Route path="subscription" element={<Subscription />} />
           <Route path="/payment-settings" element={<ProtectedRoute><PaymentSettings /></ProtectedRoute>} />
+          <Route path="guards" element={<Guards />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

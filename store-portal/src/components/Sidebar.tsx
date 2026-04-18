@@ -23,6 +23,7 @@ export default function Sidebar() {
         {
             label: 'ACCOUNT', items: [
                 { path: '/payment-settings', icon: '💳', name: 'Payment Settings' },
+                { path: '/guards', icon: '🛡️', name: 'Guards' },
                 { path: '/subscription', icon: '★', name: 'Subscription' }
             ]
         }

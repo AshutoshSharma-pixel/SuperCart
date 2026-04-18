@@ -263,4 +263,18 @@ StockLog.belongsTo(Product);
 Store.hasMany(StockLog);
 StockLog.belongsTo(Store);
 
-module.exports = { User, Store, Product, Session, CartItem, StockLog };
+// Guard Model
+const Guard = db.define('guard', {
+    name: { type: Sequelize.STRING, allowNull: false },
+    email: { type: Sequelize.STRING, allowNull: false, unique: true },
+    passwordHash: { type: Sequelize.STRING, allowNull: false },
+    storeId: { type: Sequelize.INTEGER, allowNull: false },
+    isActive: { type: Sequelize.BOOLEAN, defaultValue: true },
+    shiftScans: { type: Sequelize.INTEGER, defaultValue: 0 },
+    lastLoginAt: { type: Sequelize.DATE, allowNull: true }
+});
+
+Guard.belongsTo(Store, { foreignKey: 'storeId' });
+Store.hasMany(Guard, { foreignKey: 'storeId' });
+
+module.exports = { User, Store, Product, Session, CartItem, StockLog, Guard };

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api from '../api/client'
+import { QRCodeCanvas } from 'qrcode.react'
 import type { Transaction } from '../types'
+import { useAuth } from '../hooks/useAuth'
+import api from '../api/client'
 
 export default function Dashboard() {
     const navigate = useNavigate()
@@ -9,6 +11,36 @@ export default function Dashboard() {
     const [stats, setStats] = useState({ revenue: 0, transactions: 0, products: 0, lowStock: 0 })
     const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([])
     const [lowStockProducts, setLowStockProducts] = useState<any[]>([])
+    const { store } = useAuth()
+
+    const downloadQR = () => {
+        const canvas = document.getElementById('store-qr-code') as HTMLCanvasElement
+        if (canvas) {
+            const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream')
+            let downloadLink = document.createElement('a')
+            downloadLink.href = pngUrl
+            downloadLink.download = `${store?.name || 'store'}_supercart_qr.png`
+            document.body.appendChild(downloadLink)
+            downloadLink.click()
+            document.body.removeChild(downloadLink)
+        }
+    }
+
+    const printQR = () => {
+        const canvas = document.getElementById('store-qr-code') as HTMLCanvasElement
+        if (canvas) {
+            const dataUrl = canvas.toDataURL('image/png')
+            const windowContent = '<!DOCTYPE html><html><head><title>Print QR Code</title></head><body><div style="text-align: center; margin-top: 50px;"><h1>' + (store?.name || 'Store') + '</h1><p>SuperCart Entry QR Code</p><img src="' + dataUrl + '" style="width: 300px; height: 300px;" /></div></body></html>'
+            const printWindow = window.open('', '', 'width=600,height=600')
+            if (printWindow) {
+                printWindow.document.open()
+                printWindow.document.write(windowContent)
+                printWindow.document.close()
+                printWindow.focus()
+                printWindow.onload = function() { printWindow.print(); printWindow.close(); }
+            }
+        }
+    }
 
     useEffect(() => {
         let active = true
@@ -192,6 +224,48 @@ export default function Dashboard() {
                             </tbody>
                         </table>
                     )}
+                </div>
+
+                {/* Store QR Code */}
+                <div style={{ background: 'var(--surf)', border: '1px solid var(--bdr)', borderRadius: 12, padding: 24, display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                        <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 16 }}>Store Entry QR</h3>
+                    </div>
+
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ background: 'white', padding: 24, borderRadius: 16, marginBottom: 24, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+                            {store?.id ? (
+                                <QRCodeCanvas
+                                    id="store-qr-code"
+                                    value={JSON.stringify({ storeId: store.id })}
+                                    size={180}
+                                    fgColor="#000000"
+                                    bgColor="#ffffff"
+                                    level="H"
+                                />
+                            ) : (
+                                <div style={{ width: 180, height: 180, background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    No Store ID
+                                </div>
+                            )}
+                        </div>
+
+                        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>Print & Place at Entrance</div>
+                            <div style={{ fontSize: 13, color: 'var(--mut)', marginTop: 4, maxWidth: 280 }}>
+                                Customers will scan this QR code using the SuperCart app to start shopping in your store.
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+                            <button onClick={printQR} style={{ flex: 1, padding: '12px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, fontSize: 13, fontWeight: 600, color: 'var(--ink)', cursor: 'pointer' }}>
+                                🖨️ Print QR
+                            </button>
+                            <button onClick={downloadQR} style={{ flex: 1, padding: '12px', background: 'var(--accent)', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, color: 'white', cursor: 'pointer' }}>
+                                ⬇️ Download
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

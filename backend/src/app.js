@@ -76,6 +76,7 @@ app.use('/api/bill', require('./routes/bill.routes'));
 app.use('/api/admin', require('./routes/admin.routes'));
 app.use('/api/subscription', paymentLimiter, require('./routes/subscription.routes'));
 app.use('/api/payment-settings', require('./routes/paymentSettings.routes'));
+app.use('/api/guards', require('./routes/guard.routes'));
 
 app.use(require('./middleware/errorHandler'));
 
