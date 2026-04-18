@@ -4,7 +4,7 @@ import api from '../api/client'
 interface Guard {
     id: number
     name: string
-    email: string
+    phone: string
     isActive: boolean
     shiftScans: number
     lastLoginAt: string | null
@@ -15,7 +15,7 @@ export default function Guards() {
     const [guards, setGuards] = useState<Guard[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
-    const [formData, setFormData] = useState({ name: '', email: '', password: '' })
+    const [formData, setFormData] = useState({ name: '', phone: '', password: '' })
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState('')
 
@@ -34,7 +34,7 @@ export default function Guards() {
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!formData.name || !formData.email || !formData.password) {
+        if (!formData.name || !formData.phone || !formData.password) {
             setError('All fields are required')
             return
         }
@@ -42,7 +42,7 @@ export default function Guards() {
         setError('')
         try {
             await api.post('/guards/create', formData)
-            setFormData({ name: '', email: '', password: '' })
+            setFormData({ name: '', phone: '', password: '' })
             setShowForm(false)
             await fetchGuards()
         } catch (err: any) {
@@ -112,12 +112,12 @@ export default function Guards() {
                             />
                         </div>
                         <div>
-                            <label style={{ display: 'block', fontSize: 11, color: 'var(--mut)', fontWeight: 600, letterSpacing: '0.05em', marginBottom: 6, textTransform: 'uppercase' }}>Email</label>
+                            <label style={{ display: 'block', fontSize: 11, color: 'var(--mut)', fontWeight: 600, letterSpacing: '0.05em', marginBottom: 6, textTransform: 'uppercase' }}>Phone Number</label>
                             <input
-                                type="email"
-                                value={formData.email}
-                                onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                placeholder="guard@example.com"
+                                type="tel"
+                                value={formData.phone}
+                                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                placeholder="+91XXXXXXXXXX"
                                 style={{ width: '100%', padding: '10px 12px', background: 'var(--bg)', border: '1px solid var(--bdr)', borderRadius: 8, color: 'var(--ink)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                             />
                         </div>
@@ -156,7 +156,7 @@ export default function Guards() {
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr>
-                                {['NAME', 'EMAIL', 'STATUS', 'SHIFT SCANS', 'LAST LOGIN', 'ACTIONS'].map(h => (
+                                {['NAME', 'PHONE', 'STATUS', 'SHIFT SCANS', 'LAST LOGIN', 'ACTIONS'].map(h => (
                                     <th key={h} style={{ textAlign: h === 'ACTIONS' ? 'right' : 'left', padding: '14px 20px', borderBottom: '1px solid var(--bdr)', fontSize: 11, color: 'var(--mut)', fontWeight: 600, letterSpacing: '0.05em' }}>{h}</th>
                                 ))}
                             </tr>
@@ -167,7 +167,7 @@ export default function Guards() {
                                     onMouseOver={e => e.currentTarget.style.background = 'var(--bg)'}
                                     onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
                                     <td style={{ padding: '14px 20px', borderBottom: '1px solid var(--bdr2)', fontWeight: 600 }}>{g.name}</td>
-                                    <td style={{ padding: '14px 20px', borderBottom: '1px solid var(--bdr2)', fontFamily: 'JetBrains Mono', fontSize: 13, color: 'var(--mut)' }}>{g.email}</td>
+                                    <td style={{ padding: '14px 20px', borderBottom: '1px solid var(--bdr2)', fontFamily: 'JetBrains Mono', fontSize: 13, color: 'var(--mut)' }}>{g.phone}</td>
                                     <td style={{ padding: '14px 20px', borderBottom: '1px solid var(--bdr2)' }}>
                                         <span style={{
                                             padding: '4px 10px', borderRadius: 4, fontSize: 11, fontWeight: 600,

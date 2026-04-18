@@ -266,7 +266,7 @@ StockLog.belongsTo(Store);
 // Guard Model
 const Guard = db.define('guard', {
     name: { type: Sequelize.STRING, allowNull: false },
-    email: { type: Sequelize.STRING, allowNull: false, unique: true },
+    phone: { type: Sequelize.STRING, allowNull: false, unique: true },
     passwordHash: { type: Sequelize.STRING, allowNull: false },
     storeId: { type: Sequelize.INTEGER, allowNull: false },
     isActive: { type: Sequelize.BOOLEAN, defaultValue: true },

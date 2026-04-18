@@ -5,13 +5,13 @@ const { Guard, Store, Session, CartItem, Product } = require('../models');
 // POST /api/guards/login
 exports.guardLogin = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password required' });
+        const { phone, password } = req.body;
+        if (!phone || !password) {
+            return res.status(400).json({ error: 'Phone and password required' });
         }
 
         const guard = await Guard.findOne({
-            where: { email },
+            where: { phone },
             include: [{ model: Store, attributes: ['id', 'name', 'location'] }]
         });
 
@@ -43,7 +43,7 @@ exports.guardLogin = async (req, res, next) => {
             guard: {
                 id: guard.id,
                 name: guard.name,
-                email: guard.email,
+                phone: guard.phone,
                 storeId: guard.storeId,
                 shiftScans: guard.shiftScans,
                 store: guard.store ? { name: guard.store.name, location: guard.store.location } : null
@@ -143,27 +143,27 @@ exports.getGuardProfile = async (req, res, next) => {
 // POST /api/guards/create (store owner creates guard)
 exports.createGuard = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
-        if (!name || !email || !password) {
-            return res.status(400).json({ error: 'Name, email, and password are required' });
+        const { name, phone, password } = req.body;
+        if (!name || !phone || !password) {
+            return res.status(400).json({ error: 'Name, phone, and password are required' });
         }
 
-        const existing = await Guard.findOne({ where: { email } });
+        const existing = await Guard.findOne({ where: { phone } });
         if (existing) {
-            return res.status(409).json({ error: 'A guard with this email already exists' });
+            return res.status(409).json({ error: 'A guard with this phone number already exists' });
         }
 
         const passwordHash = await bcrypt.hash(password, 10);
         const guard = await Guard.create({
             name,
-            email,
+            phone,
             passwordHash,
             storeId: req.storeId
         });
 
         res.status(201).json({
             success: true,
-            guard: { id: guard.id, name: guard.name, email: guard.email }
+            guard: { id: guard.id, name: guard.name, phone: guard.phone }
         });
     } catch (error) {
         next(error);
