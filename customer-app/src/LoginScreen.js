@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from './firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            webClientId: '444825466346-n62vranj2hefecrn8qgoni3kri1v5nmv.apps.googleusercontent.com',
+            offlineAccess: true,
+        });
+    }, []);
 
     const handleSignIn = async () => {
         if (!email || !password) {
@@ -41,6 +49,19 @@ export default function LoginScreen() {
             setError(err.message || 'Failed to create account');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleGoogleSignIn = async () => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            const idToken = userInfo.data?.idToken || userInfo.idToken;
+            const googleCredential = GoogleAuthProvider.credential(idToken);
+            await signInWithCredential(auth, googleCredential);
+        } catch (error) {
+            setError('Google Sign-In failed. Please try again.');
+            console.error('Google Sign-In error:', error);
         }
     };
 
@@ -119,7 +140,7 @@ export default function LoginScreen() {
                         {/* Google Button */}
                         <TouchableOpacity 
                             style={styles.googleButton}
-                            onPress={() => alert('Google Sign-In integration coming soon')}
+                            onPress={handleGoogleSignIn}
                             activeOpacity={0.85}
                         >
                             <Image 
