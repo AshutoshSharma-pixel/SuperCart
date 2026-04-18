@@ -93,25 +93,19 @@ exports.startSession = async (req, res, next) => {
             return res.status(400).json({ error: 'Missing userId or storeId' });
         }
 
-        // MVP Hack: Ensure User Exists
-        // If ID 1 is sent but doesn't exist, fetch the seeded user
-        // Using User model directly now
-        let userExists = await User.findByPk(userId);
-        if (!userExists) {
-            console.log(`User ${userId} not found, looking for any user...`);
-            const firstUser = await User.findOne();
-            if (firstUser) {
-                console.log(`Falling back to User ID: ${firstUser.id}`);
-                userId = firstUser.id;
-            } else {
-                console.log('No users found! Creating default user...');
-                const newUser = await User.create({
-                    phone: '9999999999',
-                    trustScore: 100
-                });
-                userId = newUser.id;
-            }
+        // User lookup/creation by Firebase UID
+        let user = await User.findOne({ where: { firebaseUid: userId } });
+        if (!user) {
+            console.log(`No user found with firebaseUid: ${userId}. Creating new user...`);
+            user = await User.create({
+                firebaseUid: userId,
+                phone: null,
+                trustScore: 100
+            });
         }
+        
+        // Use the internal integer database ID for the remainder of the session logic
+        userId = user.id;
 
         // Ensure Store Exists (Self-healing)
         const storeExists = await Store.findByPk(storeId);

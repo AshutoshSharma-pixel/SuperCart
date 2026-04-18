@@ -2,9 +2,14 @@ const Sequelize = require('sequelize');
 const db = require('../config/database');
 
 const User = db.define('user', {
+    firebaseUid: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        unique: true
+    },
     phone: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true
     },
     trustScore: {
