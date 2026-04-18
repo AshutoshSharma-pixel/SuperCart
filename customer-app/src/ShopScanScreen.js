@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, StatusBar } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useCart } from './CartContext';
+import { auth } from './firebase';
+import { signOut } from 'firebase/auth';
 
 export default function ShopScanScreen() {
     const [permission, requestPermission] = useCameraPermissions();
@@ -60,6 +62,9 @@ export default function ShopScanScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" />
+            <TouchableOpacity style={styles.signOutBtn} onPress={() => signOut(auth)}>
+                <Text style={styles.signOutText}>SIGN OUT</Text>
+            </TouchableOpacity>
             <View style={styles.topSection}>
                 <Text style={styles.brandTitle}>SUPERCART</Text>
                 <Text style={styles.brandSubtitle}>
@@ -202,5 +207,19 @@ const styles = StyleSheet.create({
         fontWeight: '900',
         letterSpacing: 0.2 * 13,
         textTransform: 'uppercase',
+    },
+    signOutBtn: {
+        position: 'absolute',
+        top: 16,
+        right: 20,
+        zIndex: 10,
+        padding: 8,
+    },
+    signOutText: {
+        color: '#a3a3a3',
+        fontSize: 12,
+        fontWeight: '700',
+        textTransform: 'uppercase',
+        letterSpacing: 1.5,
     },
 });
