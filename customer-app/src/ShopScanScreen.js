@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
         padding: 8,
     },
     signOutText: {
-        color: '#a3a3a3',
+        color: '#FF453A',
         fontSize: 12,
         fontWeight: '700',
         textTransform: 'uppercase',
