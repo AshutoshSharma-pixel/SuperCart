@@ -60,7 +60,7 @@ export const CartProvider = ({ children }) => {
             }
             return true;
         } catch (e) {
-            console.log('Refresh Cart Error', e);
+
             return false;
         } finally {
             setLoading(false);
@@ -80,7 +80,7 @@ export const CartProvider = ({ children }) => {
             }
             return true;
         } catch (e) {
-            console.log('Session Start Error', e);
+
             if (e.message && e.message.includes('Network Error')) {
                 alert(`Network Error.\n\nCheck if phone is on same Wi-Fi as PC.\nURL: ${API_URL}`);
             } else {
@@ -102,7 +102,7 @@ export const CartProvider = ({ children }) => {
             setTotal(res.data.totalAmount);
             return true;
         } catch (e) {
-            console.log('Add Item Error', e);
+
             if (e.response?.status === 404) {
                 alert(`Product not found!\nBarcode: ${barcode}\n\nThis product is not in the store database.`);
             } else {
@@ -134,7 +134,7 @@ export const CartProvider = ({ children }) => {
                 };
             }
         } catch (e) {
-            console.log('Checkout Init Error', e);
+
             alert('Checkout Init Failed: ' + (e.message || 'Unknown'));
             return null;
         } finally {
@@ -160,7 +160,7 @@ export const CartProvider = ({ children }) => {
                 return true;
             }
         } catch (e) {
-            console.log('Verification Error', e);
+
             alert('Payment Verification Failed!');
             return false;
         } finally {
@@ -213,7 +213,7 @@ export const CartProvider = ({ children }) => {
 
             const downloadRes = await FileSystem.downloadAsync(url, fileUri);
             
-            console.log('Download result:', JSON.stringify(downloadRes));
+
 
             if (downloadRes.status === 200) {
                 await Sharing.shareAsync(downloadRes.uri, {

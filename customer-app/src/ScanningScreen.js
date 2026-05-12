@@ -34,7 +34,6 @@ export default function ScanningScreen() {
                     productId: productId
                 });
             } else {
-                console.log('PUT payload:', JSON.stringify({ sessionId: session.id, productId, quantity: newQty, currentQty, delta }));
                 await api.put('/cart/quantity', {
                     sessionId: session.id,
                     productId: productId,
