@@ -87,10 +87,10 @@ exports.addToCart = async (req, res, next) => {
 exports.startSession = async (req, res, next) => {
     try {
         console.log('Start Session Request Body:', req.body);
-        let { userId, storeId } = req.body;
+        let { userId, shopId } = req.body;
 
-        if (!userId || !storeId) {
-            return res.status(400).json({ error: 'Missing userId or storeId' });
+        if (!userId || !shopId) {
+            return res.status(400).json({ error: 'Missing userId or shopId' });
         }
 
         // User lookup/creation by Firebase UID
@@ -107,26 +107,13 @@ exports.startSession = async (req, res, next) => {
         // Use the internal integer database ID for the remainder of the session logic
         userId = user.id;
 
-        // Ensure Store Exists (Self-healing)
-        const storeExists = await Store.findByPk(storeId);
-        if (!storeExists) {
-            console.log(`Store ${storeId} not found! Creating default store...`);
-            // We force ID 1 if possible, or just create one and use its ID
-            // Sequelize doesn't support forcing ID easily unless defined, 
-            // but we can try to find ANY store or create new
-            const firstStore = await Store.findOne();
-            if (firstStore) {
-                console.log(`Falling back to Store ID: ${firstStore.id}`);
-                storeId = firstStore.id;
-            } else {
-                const newStore = await Store.create({
-                    name: 'SuperMart Default',
-                    location: 'Default Location',
-                    upiId: 'default@upi'
-                });
-                storeId = newStore.id;
-            }
+        // Find store by shopId
+        const store = await Store.findOne({ where: { shopId } });
+        if (!store) {
+            return res.status(404).json({ error: 'Store not found' });
         }
+        
+        const storeId = store.id;
 
         // Check for existing active session
         let session = await Session.findOne({
@@ -140,9 +127,6 @@ exports.startSession = async (req, res, next) => {
                 status: 'ACTIVE'
             });
         }
-
-        // Fetch store details to include in response
-        const store = await Store.findByPk(storeId);
 
         res.json({
             ...session.toJSON(),

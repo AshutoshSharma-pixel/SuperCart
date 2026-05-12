@@ -237,7 +237,7 @@ export default function Dashboard() {
                             {store?.id ? (
                                 <QRCodeCanvas
                                     id="store-qr-code"
-                                    value={JSON.stringify({ storeId: store.id })}
+                                    value={JSON.stringify({ shopId: store.shopId })}
                                     size={180}
                                     fgColor="#000000"
                                     bgColor="#ffffff"

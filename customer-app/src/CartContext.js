@@ -67,10 +67,10 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    const initSession = async (storeId) => {
+    const initSession = async (shopId) => {
         try {
             setLoading(true);
-            const res = await withTimeout(startSession(user?.uid, storeId));
+            const res = await withTimeout(startSession({ userId: user?.uid, shopId }));
             // Backend returns session object including products if resuming?
             // For MVP, simplistic handling:
             setSession(res.data);

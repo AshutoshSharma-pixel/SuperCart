@@ -12,8 +12,8 @@ const api = axios.create({
     }
 });
 
-export const startSession = async (userId, storeId) => {
-    return api.post('/cart/start', { userId, storeId });
+export const startSession = async ({ userId, shopId }) => {
+    return api.post('/cart/start', { userId, shopId });
 };
 
 export const addToCart = async (sessionId, barcode, quantity = 1) => {

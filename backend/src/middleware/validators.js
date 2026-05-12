@@ -62,7 +62,7 @@ const validateStoreRegister = [
 // Cart validators
 const validateStartSession = [
     body('userId').notEmpty().withMessage('userId is required'),
-    body('storeId').isInt({ min: 1 }).withMessage('Invalid storeId'),
+    body('shopId').trim().notEmpty().withMessage('shopId is required'),
     validate
 ];
 

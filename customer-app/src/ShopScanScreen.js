@@ -15,19 +15,19 @@ export default function ShopScanScreen() {
     const handleBarCodeScanned = async ({ data }) => {
         if (scanned) return;
 
-        let storeId = null;
+        let shopId = null;
         try {
             const json = JSON.parse(data);
-            if (json && json.storeId) {
-                storeId = parseInt(json.storeId);
+            if (json && json.shopId) {
+                shopId = json.shopId;
             }
         } catch (e) {
             if (!isNaN(data)) {
-                storeId = parseInt(data);
+                shopId = data;
             }
         }
 
-        if (!storeId || isNaN(storeId)) {
+        if (!shopId) {
             if (!scanned) {
                 setScanned(true);
                 alert('Invalid QR Code. Please scan the Store QR.');
@@ -37,7 +37,7 @@ export default function ShopScanScreen() {
         }
 
         setScanned(true);
-        const success = await initSession(storeId);
+        const success = await initSession(shopId);
         if (success) {
             setCameraActive(false);
         } else {
