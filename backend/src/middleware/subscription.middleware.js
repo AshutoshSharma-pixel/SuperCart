@@ -4,12 +4,15 @@ const checkSubscription = async (req, res, next) => {
     try {
         // Find storeId from auth context, body, query or req.user context depending on the route
         const storeId = req.storeId || req.body.storeId || req.query.storeId || (req.user && req.user.storeId);
+        let store = null;
 
-        if (!storeId || isNaN(parseInt(storeId))) {
-            return res.status(400).json({ error: 'Valid Store ID is required to verify subscription.' });
+        if (storeId && !isNaN(parseInt(storeId))) {
+            store = await Store.findByPk(storeId);
+        } else if (req.body.shopId) {
+            store = await Store.findOne({ where: { shopId: req.body.shopId } });
+        } else {
+            return res.status(400).json({ error: 'Valid Store ID or Shop ID is required to verify subscription.' });
         }
-
-        const store = await Store.findByPk(storeId);
 
         if (!store) {
             return res.status(404).json({ error: 'Store not found.' });
