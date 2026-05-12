@@ -97,6 +97,10 @@ const Product = db.define('product', {
         type: Sequelize.STRING,
         allowNull: false
     },
+    size: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
     price: {
         type: Sequelize.FLOAT,
         allowNull: false

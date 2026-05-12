@@ -15,6 +15,7 @@ export default function Products() {
     const [price, setPrice] = useState('')
     const [initialStock, setInitialStock] = useState('')
     const [threshold, setThreshold] = useState('5')
+    const [size, setSize] = useState('')
 
     const fetchProducts = async () => {
         try {
@@ -39,13 +40,15 @@ export default function Products() {
                 name: productName,
                 price,
                 quantity: parseInt(initialStock),
-                lowStockThreshold: parseInt(threshold)
+                lowStockThreshold: parseInt(threshold),
+                size: size || null
             })
             // Reset form
             setBarcodeValue('')
             setProductName('')
             setPrice('')
             setInitialStock('')
+            setSize('')
             fetchProducts()
         } catch (err: any) {
             alert(err.response?.data?.error || 'Failed to add product')
@@ -104,14 +107,19 @@ export default function Products() {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end' }}>
+                    <div style={{ display: 'flex', gap: 16 }}>
                         <div style={{ flex: 1 }}>
                             <label style={labelStyle}>Low Stock Threshold</label>
                             <input style={inputStyle} type="number" value={threshold} onChange={e => setThreshold(e.target.value)} required />
                         </div>
                         <div style={{ flex: 1 }}>
-                            <button type="submit" style={{ ...btnStyle, width: '100%', background: 'var(--accent)', color: 'white' }}>+ Add Product</button>
+                            <label style={labelStyle}>Size (optional)</label>
+                            <input style={inputStyle} value={size} onChange={e => setSize(e.target.value)} placeholder="e.g. S, M, L, XL, 500ml, 1kg" />
                         </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" style={{ ...btnStyle, width: '100%', background: 'var(--accent)', color: 'white' }}>+ Add Product</button>
                     </div>
                 </form>
             </div>
@@ -128,7 +136,11 @@ export default function Products() {
                                 {p.stock === 0 ? 'OUT OF STOCK' : p.stock <= p.lowStockThreshold ? 'LOW STOCK' : 'IN STOCK'}
                             </Badge>
                         </div>
-                        <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, color: 'var(--ink)' }}>{p.name}</div>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{p.name}</div>
+                        {p.size && (
+                            <div style={{ fontSize: 12, color: 'var(--mut)', marginBottom: 8 }}>{p.size}</div>
+                        )}
+                        {!p.size && <div style={{ marginBottom: 8 }}></div>}
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 20 }}>
                             <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 22, color: 'var(--ink)' }}>₹{p.price}</div>
                             {p.isDiscountActive && p.discountValue && (

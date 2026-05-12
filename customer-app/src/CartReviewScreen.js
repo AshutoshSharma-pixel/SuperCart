@@ -36,6 +36,9 @@ export default function CartReviewScreen() {
             <View style={styles.itemRow}>
                 <View style={styles.itemInfo}>
                     <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
+                    {item.size && (
+                        <Text style={{ fontSize: 12, color: '#a3a3a3', marginTop: 2 }}>{item.size}</Text>
+                    )}
                 </View>
                 
                 <View style={styles.quantityControl}>

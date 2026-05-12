@@ -63,7 +63,7 @@ exports.addProduct = async (req, res, next) => {
     try {
         const storeId = req.storeId;
         const {
-            barcode, name, price,
+            barcode, name, price, size,
             stock, lowStockThreshold,
             discountType, discountValue, discountExpiresAt, isDiscountActive
         } = req.body;
@@ -79,7 +79,7 @@ exports.addProduct = async (req, res, next) => {
         }
 
         const product = await Product.create({
-            barcode, name, price, storeId,
+            barcode, name, price, storeId, size,
             stock: stock || 0,
             lowStockThreshold: lowStockThreshold || 5,
             isOutOfStock: (stock || 0) === 0,
@@ -109,7 +109,7 @@ exports.updateProduct = async (req, res, next) => {
         const storeId = req.storeId;
         const { id } = req.params;
         const {
-            name, price,
+            name, price, size,
             discountType, discountValue, discountExpiresAt, isDiscountActive
         } = req.body;
 
@@ -129,6 +129,7 @@ exports.updateProduct = async (req, res, next) => {
 
         if (name !== undefined) product.name = name;
         if (price !== undefined) product.price = price;
+        if (size !== undefined) product.size = size;
         if (discountType !== undefined) product.discountType = discountType;
         if (discountValue !== undefined) product.discountValue = discountValue;
         if (discountExpiresAt !== undefined) product.discountExpiresAt = discountExpiresAt;

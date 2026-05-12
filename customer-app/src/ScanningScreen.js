@@ -83,6 +83,9 @@ export default function ScanningScreen() {
                             <View key={index} style={styles.itemCard}>
                                 <View style={styles.itemInfo}>
                                     <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
+                                    {item.size && (
+                                        <Text style={{ fontSize: 11, color: '#a3a3a3', marginTop: 2 }}>{item.size}</Text>
+                                    )}
                                     <Text style={styles.itemPrice}>₹{item.cart_item.finalPriceSnapshot || item.price}</Text>
                                 </View>
                                 
