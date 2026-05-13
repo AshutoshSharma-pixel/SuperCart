@@ -13,6 +13,7 @@ export interface Product {
     id: number
     barcode: string
     name: string
+    size?: string | null;
     price: string
     stock: number
     quantity?: number
