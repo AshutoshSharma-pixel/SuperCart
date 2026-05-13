@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const login = async (email, password) => {
-        const data = await loginGuard(email, password);
+    const login = async (phone, password) => {
+        const data = await loginGuard(phone, password);
         if (data.token && data.guard) {
             await AsyncStorage.setItem('guard_token', data.token);
             await AsyncStorage.setItem('guard_info', JSON.stringify(data.guard));
