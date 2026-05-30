@@ -40,6 +40,14 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.444825466346-3kn9pe41aptabfvl7hdai9kbi1a10i58"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enablePngCrunchInReleaseBuilds": false
+          }
+        }
       ]
     ]
   }
