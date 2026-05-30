@@ -29,6 +29,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-build-properties"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ed2118d7-f7d0-4af4-9631-ecfe1fc0cede"
+      }
+    },
+    "owner": "supercart"
   }
 }
