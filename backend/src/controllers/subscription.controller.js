@@ -9,8 +9,8 @@ const razorpay = new Razorpay({
 
 const PLAN_PRICES = {
     STARTER: 99900,    // ₹999
-    GROWTH: 350000,    // ₹3,500
-    ENTERPRISE: 800000 // ₹8,000
+    GROWTH: 299900,    // ₹2,999
+    ENTERPRISE: 1499900 // ₹14,999
 };
 
 exports.getStatus = async (req, res, next) => {

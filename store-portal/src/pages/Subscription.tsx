@@ -3,9 +3,33 @@ import api from '../api/client'
 import Badge from '../components/Badge'
 
 const PLANS = [
-    { id: 'starter', label: 'Starter Segment', price: 999, txns: '1,000 / month', skus: '100 products limit', support: 'Community Support' },
-    { id: 'growth', label: 'Growth Plan', price: 3500, txns: '5,000 / month', skus: '500 products limit', support: '24/7 Priority Email' },
-    { id: 'enterprise', label: 'Enterprise Platform', price: 8000, txns: 'Unlimited Volume', skus: 'Unlimited capacity', support: '1-on-1 Dedicated PAM' }
+    { 
+        id: 'starter', 
+        label: 'Starter Segment', 
+        price: 999, 
+        txns: 'Unlimited', 
+        skus: '500 products limit', 
+        support: 'Community Support',
+        features: ['Customer App + Guard App', 'Store Portal & Analytics', 'Community Support']
+    },
+    { 
+        id: 'growth', 
+        label: 'Growth Plan', 
+        price: 2999, 
+        txns: 'Unlimited', 
+        skus: '5,000 products limit', 
+        support: 'Priority Support',
+        features: ['Everything in Starter', 'Priority Support', 'Advanced Analytics']
+    },
+    { 
+        id: 'enterprise', 
+        label: 'Enterprise Platform', 
+        price: 14999, 
+        txns: 'Unlimited', 
+        skus: '50,000 products limit', 
+        support: 'Dedicated support + SLA',
+        features: ['Everything in Growth', 'Custom integrations', 'Dedicated support + SLA']
+    }
 ]
 
 export default function Subscription() {
@@ -107,9 +131,16 @@ export default function Subscription() {
                                             <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18 }}>{plan.label}</div>
                                             {isActive && <Badge type="info">CURRENT PLAN</Badge>}
                                         </div>
-                                        <div style={{ display: 'flex', gap: 16, color: 'var(--mut)', fontSize: 13, fontWeight: 500 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 4, height: 4, background: 'var(--gold)', borderRadius: '50%' }} /> {plan.txns}</div>
+                                        <div style={{ display: 'flex', gap: 16, color: 'var(--mut)', fontSize: 13, fontWeight: 500, marginBottom: 12 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 4, height: 4, background: 'var(--gold)', borderRadius: '50%' }} /> {plan.txns} Transactions</div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div style={{ width: 4, height: 4, background: 'var(--gold)', borderRadius: '50%' }} /> {plan.skus}</div>
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                            {plan.features.map((feat, fidx) => (
+                                                <div key={fidx} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--mut)' }}>
+                                                    <span style={{ color: 'var(--gold)', fontWeight: 'bold' }}>✓</span> {feat}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
 
