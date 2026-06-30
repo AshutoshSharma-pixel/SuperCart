@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { BrowserMultiFormatReader } from '@zxing/browser'
+import { DecodeHintType, BarcodeFormat } from '@zxing/library'
 
 interface Props {
     onDetected: (barcode: string) => void
@@ -16,12 +17,39 @@ export default function BarcodeScanner({ onDetected, onClose }: Props) {
         async function start() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment', width: { ideal: 1280 } }
+                    video: {
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        focusMode: 'continuous'
+                    } as any
                 })
                 if (!active) { stream.getTracks().forEach(t => t.stop()); return }
                 streamRef.current = stream
                 if (videoRef.current) videoRef.current.srcObject = stream
-                const reader = new BrowserMultiFormatReader()
+
+                const track = stream.getVideoTracks()[0]
+                if (track) {
+                    try {
+                        await track.applyConstraints({
+                            advanced: [{ focusMode: 'continuous' }]
+                        } as any)
+                    } catch (e) {
+                        console.warn('focusMode not supported by track', e)
+                    }
+                }
+
+                const hints = new Map<DecodeHintType, any>()
+                hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+                    BarcodeFormat.EAN_13,
+                    BarcodeFormat.EAN_8,
+                    BarcodeFormat.UPC_A,
+                    BarcodeFormat.UPC_E,
+                    BarcodeFormat.CODE_128,
+                    BarcodeFormat.QR_CODE
+                ])
+
+                const reader = new BrowserMultiFormatReader(hints)
                 readerRef.current = reader
                 reader.decodeFromVideoElement(videoRef.current!, (result) => {
                     if (result && active) {
