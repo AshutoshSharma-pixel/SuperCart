@@ -46,7 +46,14 @@ export default function BarcodeScanner({ onDetected, onClose }: Props) {
                     BarcodeFormat.UPC_A,
                     BarcodeFormat.UPC_E,
                     BarcodeFormat.CODE_128,
-                    BarcodeFormat.QR_CODE
+                    BarcodeFormat.CODE_39,
+                    BarcodeFormat.CODE_93,
+                    BarcodeFormat.CODABAR,
+                    BarcodeFormat.ITF,
+                    BarcodeFormat.QR_CODE,
+                    BarcodeFormat.DATA_MATRIX,
+                    BarcodeFormat.AZTEC,
+                    BarcodeFormat.PDF_417
                 ])
 
                 const reader = new BrowserMultiFormatReader(hints)
